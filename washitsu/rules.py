@@ -5,11 +5,11 @@ obstruent = -sonorant
 
 
 def voicing_assim(word: Word, segment: Segment) -> Segment:
-    if word.surrounds([], segment, [voiced & consonantal & obstruent]) and segment.has(
+    if word.matches(segment, [voiced & consonantal & obstruent]) and segment.has(
         consonantal & obstruent
     ):
         return segment + voiced
-    if word.surrounds([], segment, [-voiced & consonantal & obstruent]) and segment.has(
+    if word.matches(segment, [-voiced & consonantal & obstruent]) and segment.has(
         consonantal & obstruent
     ):
         return segment - voiced
@@ -17,7 +17,7 @@ def voicing_assim(word: Word, segment: Segment) -> Segment:
 
 
 def intervocalic_voicing(word: Word, segment: Segment) -> Segment:
-    if word.surrounds(
+    if word.matches(
         [voiced & -consonantal], segment, [voiced & -consonantal]
     ) and segment.has(consonantal & obstruent):
         return segment + voiced

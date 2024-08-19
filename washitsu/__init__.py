@@ -449,7 +449,31 @@ class Word:
 
         return segments
 
-    def surrounds(self, before, syllable, after):
+    @t.overload
+    def matches(self, before, syllable: Syllable, after) -> bool:
+        ...
+
+    @t.overload
+    def matches(self, before, syllable: Syllable) -> bool:
+        ...
+
+    @t.overload
+    def matches(self, syllable: Syllable, after) -> bool:
+        ...
+
+    def matches(self, *args):
+        if len(args) == 3:
+            return self._matches(args[0], args[1], args[2])
+
+        if len(args) == 2 and isinstance(args[0], Syllable):
+            return self._matches([], args[0], args[1])
+
+        if len(args) == 2 and isinstance(args[1], Syllable):
+            return self._matches(args[0], args[1], [])
+
+        raise Exception("Unknown overload")
+
+    def _matches(self, before, syllable, after):
         syllables = self.flatten()
         index = syllables.index(syllable)
 
