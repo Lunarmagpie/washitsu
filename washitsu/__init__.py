@@ -219,15 +219,24 @@ def ipa(*symbols: list[str]):
         output.append(new_segment)
     return output
 
-def word(segments: list[Segment], *seg_filters: t.Callable[[list[Feature]], bool]):
+def syllable(
+	segments: list[Segment],
+	onset: list[t.Callable[[list[Feature]], bool]],
+	nucleus: list[t.Callable[[list[Feature]], bool]],
+	coda: list[t.Callable[[list[Feature]], bool]],
+):
 	output = []
 	
-	for segment in seg_filters:
-		stuff = list(filter(lambda x: segment(x.features), segments))
-		print(stuff)
-		output += [random.choice(stuff)]
+	for segment in [onset, nucleus, coda]:
+		outputoutput = []
 
-	return output
+		for segmentsegment in segment:
+			stuff = list(filter(lambda x: segmentsegment(x.features), segments))
+			outputoutput += [random.choice(stuff)]
+
+		output += [outputoutput]
+
+	return Syllable(*output)
 
 
 @dataclass
@@ -235,7 +244,7 @@ class Syllable:
     onset: list[Segment]
     nucleus: list[Segment]
     coda: list[Segment]
-    supersegmentals: list[Feature]
+    # supersegmentals: list[Feature]
 
 
 @dataclass
