@@ -336,9 +336,9 @@ def ipa(*symbols: list[str]) -> list[Segment]:
 
 def syllable(
     segments: list[Segment],
-    onset: list[t.Callable[[list[Feature]], bool]],
-    nucleus: list[t.Callable[[list[Feature]], bool]],
-    coda: list[t.Callable[[list[Feature]], bool]],
+    onset: list[t.Callable[[list[Feature]], bool] | None],
+    nucleus: list[t.Callable[[list[Feature]], bool] | None],
+    coda: list[t.Callable[[list[Feature]], bool] | None],
 ):
     output = []
 
@@ -346,6 +346,8 @@ def syllable(
         outputoutput = []
 
         for segmentsegment in segment:
+            if (not segmentsegment):
+                continue
             stuff = list(filter(lambda x: segmentsegment(x.features), segments))
             outputoutput += [random.choice(stuff)]
 
@@ -528,3 +530,8 @@ def select(symbol: str) -> Feature:
 
 def find(symbol: str) -> Segment:
     return next(filter(lambda x: x.ipa_symbol == symbol, SEGMENTS))
+
+
+def probability(feature: Feature, chance: float):
+    if chance > random.random():
+        return feature
