@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 import typing as t
 import random
-import itertools
 import copy
 import builtins
 
@@ -107,6 +106,7 @@ class Segment:
         changed.features += [other]
         return changed
 
+
     def __eq__(self, other):
         return (
             isinstance(self, Segment)
@@ -115,138 +115,6 @@ class Segment:
             and lists_are_equal(self.features, other.features)
         )
 
-
-SEGMENT_PRINTING_TABLE = [
-    ("p", [consonantal, bilabial, stop]),
-    ("b", [consonantal, bilabial, stop, voiced]),
-    ("t", [consonantal, alveolar, stop]),
-    ("d", [consonantal, alveolar, stop, voiced]),
-    ("ʈ", [consonantal, retroflex, stop]),
-    ("ɖ", [consonantal, retroflex, stop, voiced]),
-    ("c", [consonantal, palatal, stop]),
-    ("ɟ", [consonantal, palatal, stop, voiced]),
-    ("k", [consonantal, velar, stop]),
-    ("g", [consonantal, velar, stop, voiced]),
-    ("q", [consonantal, uvular, stop]),
-    ("ɢ", [consonantal, uvular, stop, voiced]),
-    ("ʔ", [glottal, uvular, stop]),
-    ("t͡s", [consonantal, alveolar, stop, delayed_release]),
-    ("d͡z", [consonantal, alveolar, stop, voiced, delayed_release]),
-    ("t͡ʃ", [consonantal, postalveolar, stop, delayed_release]),
-    ("d͡ʒ", [consonantal, postalveolar, stop, voiced, delayed_release]),
-    ("t͡ɕ", [consonantal, alveolar, palatal, stop, delayed_release]),
-    (
-        "d͡ʑ",
-        [consonantal, alveolar, palatal, stop, voiced, delayed_release],
-    ),
-    ("ʈ͡ʂ", [consonantal, retroflex, stop, delayed_release]),
-    ("ɖ͡ʐ", [consonantal, retroflex, stop, voiced, delayed_release]),
-    (
-        "t͡ɬ",
-        [consonantal, alveolar, palatal, stop, lateral, delayed_release],
-    ),
-    (
-        "d͡ɮ",
-        [consonantal, alveolar, palatal, stop, voiced, lateral, delayed_release],
-    ),
-    ("m̥", [consonantal, bilabial, stop, sonorant, nasal]),
-    ("ɱ̊", [consonantal, labiodental, stop, sonorant, nasal]),
-    ("n̥", [consonantal, alveolar, stop, sonorant, nasal]),
-    ("ɳ̊", [consonantal, retroflex, stop, sonorant, nasal]),
-    ("ɲ̊", [consonantal, palatal, stop, sonorant, nasal]),
-    ("ŋ̊", [consonantal, velar, stop, sonorant, nasal]),
-    ("ɴ̥", [consonantal, uvular, stop, sonorant, nasal]),
-    ("m", [consonantal, bilabial, stop, sonorant, nasal, voiced]),
-    ("ɱ", [consonantal, labiodental, stop, sonorant, nasal, voiced]),
-    ("n", [consonantal, alveolar, stop, sonorant, nasal, voiced]),
-    ("ɳ", [consonantal, retroflex, stop, sonorant, nasal, voiced]),
-    ("ɲ", [consonantal, palatal, stop, sonorant, nasal, voiced]),
-    ("ŋ", [consonantal, velar, stop, sonorant, nasal, voiced]),
-    ("ɴ", [consonantal, uvular, stop, sonorant, nasal, voiced]),
-    ("̥ʙ", [consonantal, bilabial, sonorant, continuant, trill]),
-    ("̥r", [consonantal, alveolar, sonorant, continuant, trill]),
-    ("̥ʀ", [consonantal, uvular, sonorant, continuant, trill]),
-    ("̥ⱱ", [consonantal, labiodental, sonorant, continuant, tap]),
-    ("̥ɾ", [consonantal, alveolar, sonorant, tap]),
-    ("̊ɽ", [consonantal, retroflex, sonorant, tap]),
-    ("ʙ", [consonantal, bilabial, sonorant, continuant, trill, voiced]),
-    ("r", [consonantal, alveolar, sonorant, continuant, trill, voiced]),
-    ("ʀ", [consonantal, uvular, sonorant, continuant, trill, voiced]),
-    ("ⱱ", [consonantal, labiodental, sonorant, continuant, tap, voiced]),
-    ("ɾ", [consonantal, alveolar, sonorant, tap, voiced]),
-    ("ɽ", [consonantal, retroflex, sonorant, tap, voiced]),
-    ("ɸ", [consonantal, continuant, bilabial, strident]),
-    ("β", [consonantal, continuant, bilabial, strident, voiced]),
-    ("f", [consonantal, continuant, labiodental, strident]),
-    ("v", [consonantal, continuant, labiodental, strident, voiced]),
-    ("θ", [consonantal, continuant, alveolar, strident]),
-    ("ð", [consonantal, continuant, alveolar, strident, voiced]),
-    ("s", [consonantal, continuant, alveolar, strident, sibilant]),
-    ("z", [consonantal, continuant, alveolar, strident, sibilant, voiced]),
-    ("ɬ", [consonantal, continuant, alveolar, strident, lateral]),
-    ("ɮ", [consonantal, continuant, alveolar, strident, lateral, voiced]),
-    ("ʃ", [consonantal, continuant, postalveolar, strident, sibilant]),
-    (
-        "ʒ",
-        [consonantal, continuant, postalveolar, strident, sibilant, voiced],
-    ),
-    ("ʂ", [consonantal, continuant, retroflex, strident, sibilant]),
-    (
-        "ʐ",
-        [consonantal, continuant, retroflex, strident, sibilant, voiced],
-    ),
-    ("ç", [consonantal, continuant, palatal, strident]),
-    ("ʝ", [consonantal, continuant, palatal, strident, voiced]),
-    (
-        "ɕ",
-        [consonantal, continuant, alveolar, palatal, strident, sibilant],
-    ),
-    (
-        "ʑ",
-        [consonantal, continuant, alveolar, palatal, strident, sibilant, voiced],
-    ),
-    ("x", [consonantal, continuant, velar, strident]),
-    ("ɣ", [consonantal, continuant, velar, strident, voiced]),
-    ("χ", [consonantal, continuant, uvular, strident]),
-    ("ʁ", [consonantal, continuant, uvular, strident, voiced]),
-    ("ħ", [consonantal, continuant, pharyngeal, strident]),
-    ("ʕ", [consonantal, continuant, pharyngeal, strident, voiced]),
-    ("h", [continuant, glottal, strident]),
-    ("ɦ", [continuant, glottal, strident, voiced]),
-    ("ʋ̥", [consonantal, continuant, sonorant, labiodental]),
-    ("ɹ̥", [consonantal, continuant, sonorant, postalveolar]),
-    ("ɻ̊", [consonantal, continuant, sonorant, retroflex]),
-    ("ɰ̊", [continuant, sonorant, velar]),
-    ("j̊", [continuant, sonorant, palatal]),
-    ("ɥ̊", [continuant, sonorant, palatal, labialized]),
-    ("ʍ", [continuant, sonorant, velar, labialized]),
-    ("ʋ", [consonantal, continuant, sonorant, labiodental, voiced]),
-    ("ɹ", [consonantal, continuant, sonorant, postalveolar, voiced]),
-    ("ɻ", [consonantal, continuant, sonorant, retroflex, voiced]),
-    ("ɰ", [continuant, sonorant, velar, voiced]),
-    ("j", [continuant, sonorant, palatal, voiced]),
-    ("ɥ", [continuant, sonorant, palatal, labialized, voiced]),
-    ("w", [continuant, sonorant, velar, labialized, voiced]),
-    ("l̥", [consonantal, continuant, sonorant, alveolar, lateral]),
-    ("ɭ̊", [consonantal, continuant, sonorant, alveolar, lateral]),
-    ("ʎ̥", [consonantal, continuant, sonorant, alveolar, lateral]),
-    ("ʟ̥", [consonantal, continuant, sonorant, alveolar, lateral]),
-    ("l", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
-    ("ɭ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
-    ("ʎ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
-    ("ʟ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
-    ("ɪ", [syllabic, voiced, sonorant, continuant, high]),
-    ("ʊ", [syllabic, voiced, sonorant, continuant, high, back, labialized]),
-    ("ɛ", [syllabic, voiced, sonorant, continuant, mid_high]),
-    ("ɔ", [syllabic, voiced, sonorant, continuant, mid_high, back, labialized]),
-    ("ɐ", [syllabic, voiced, sonorant, continuant, low]),
-    ("i", [syllabic, voiced, sonorant, continuant, high, tense]),
-    ("u", [syllabic, voiced, sonorant, continuant, high, back, labialized, tense]),
-    ("e", [syllabic, voiced, sonorant, continuant, mid_high, tense]),
-    ("o", [syllabic, voiced, sonorant, continuant, mid_high, back, labialized, tense]),
-    ("a", [syllabic, voiced, sonorant, continuant, low, tense]),
-    ("ə", [syllabic, voiced, sonorant, continuant]),
-]
 
 SEGMENTS = [
     Segment("p", [consonantal, bilabial, stop]),
@@ -385,7 +253,7 @@ SEGMENTS = [
 ]
 
 
-def ipa(*symbols: list[str]) -> list[Segment]:
+def ipa(*symbols: list[str]):
     output = []
     for symbol in symbols:
         extra_features = []
@@ -397,23 +265,6 @@ def ipa(*symbols: list[str]) -> list[Segment]:
         segment = next(filter(lambda s: s.ipa_symbol in symbol, SEGMENTS))
         new_segment = Segment(symbol, segment.features + extra_features)
         output.append(new_segment)
-    return output
-
-
-def select(symbol: str):
-    features = ipa(symbol)[0].features
-    full_features = list(itertools.chain.from_iterable([s.features for s in SEGMENTS]))
-    all_features: list[Feature] = []
-    [all_features.append(x) for x in full_features if x not in all_features]
-
-    output = features[0]
-    for i in range(0, len(all_features) - 1):
-        next_feature = all_features[i + 1]
-        if next_feature in features:
-            output = output & next_feature
-        else:
-            output = output & -next_feature
-
     return output
 
 
@@ -442,7 +293,6 @@ class Syllable:
     onset: list[Segment]
     nucleus: list[Segment]
     coda: list[Segment]
-
     # supersegmentals: list[Feature]
     #
     def __eq__(self, other):
