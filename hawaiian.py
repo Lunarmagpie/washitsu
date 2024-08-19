@@ -1,5 +1,6 @@
 from washitsu import *
 from washitsu.rules import *
+import random
 
 segments = ipa(
     "i",
