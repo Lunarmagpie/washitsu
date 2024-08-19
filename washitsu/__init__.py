@@ -2,13 +2,12 @@ from __future__ import annotations
 import itertools
 import copy
 from dataclasses import dataclass
-import builtins
 import random
 import typing as t
 
 
 def lists_are_equal(a, b):
-    return builtins.all(x in b for x in a) and builtins.all(x in a for x in b)
+    return all(x in b for x in a) and all(x in a for x in b)
 
 
 class HigherOrderFunction:
@@ -20,10 +19,10 @@ class HigherOrderFunction:
         return self.callable(*args, **kwargs)
 
     def __and__(self, other):
-        return all(self, other)
+        return all_combinator(self, other)
 
     def __or__(self, other):
-        return any(self, other)
+        return any_combinator(self, other)
 
     def __xor__(self, other):
         return xor(self, other)
@@ -35,12 +34,12 @@ class HigherOrderFunction:
         return self
 
 
-def all(*argv):
-    return HigherOrderFunction(lambda x: builtins.all(arg(x) for arg in argv))
+def all_combinator(*argv):
+    return HigherOrderFunction(lambda x: all(arg(x) for arg in argv))
 
 
-def any(*argv):
-    return HigherOrderFunction(lambda x: builtins.any(arg(x) for arg in argv))
+def any_combinator(*argv):
+    return HigherOrderFunction(lambda x: any(arg(x) for arg in argv))
 
 def xor(left, right):
     return HigherOrderFunction(lambda x: left(x) ^ right(x))
@@ -392,7 +391,7 @@ class Word:
         def matches(parts, funcs):
             if len(funcs) == 0:
                 return True
-            return builtins.all(b(a.features) for (a, b) in zip(parts, funcs))
+            return all(b(a.features) for (a, b) in zip(parts, funcs))
 
         if not matches(before_part, before):
             return False
