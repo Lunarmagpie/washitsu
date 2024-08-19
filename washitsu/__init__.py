@@ -95,6 +95,7 @@ low = Feature("Low")
 back = Feature("back")
 tense = Feature("Tense")
 labialized = Feature("Labialized")
+palatalized = Feature("Palatalized")
 
 
 @dataclass
@@ -106,7 +107,6 @@ class Segment:
         changed = copy.deepcopy(self)
         changed.features += [other]
         return changed
-
 
     def __eq__(self, other):
         return (
@@ -253,15 +253,20 @@ SEGMENTS = [
     Segment("ə", [syllabic, voiced, sonorant, continuant]),
 ]
 
+DIACRITICS = [
+    Segment("ʰ", [aspirated]),
+    Segment("ʷ", [labialized]),
+    Segment("ʲ", [palatalized]),
+]
+
 
 def ipa(*symbols: list[str]):
     output = []
     for symbol in symbols:
         extra_features = []
-        if "ʰ" in symbol:
-            extra_features.append(aspirated)
-        if "ʷ" in symbol:
-            extra_features.append(labialized)
+        for diacritic in DIACRITICS:
+            if diacritic.ipa_symbol in symbol:
+                extra_features.append(diacritic.features)
 
         segment = next(filter(lambda s: s.ipa_symbol in symbol, SEGMENTS))
         new_segment = Segment(symbol, segment.features + extra_features)
@@ -294,6 +299,7 @@ class Syllable:
     onset: list[Segment]
     nucleus: list[Segment]
     coda: list[Segment]
+
     # supersegmentals: list[Feature]
     #
     def __eq__(self, other):
@@ -369,6 +375,7 @@ class Word:
 
     def then(self, sound_change: t.Callable[[Word], Word]) -> t.Self:
         return sound_change(self)
+
 
 def select(symbol: str):
     features = ipa(symbol)[0].features
