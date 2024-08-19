@@ -37,15 +37,15 @@ Word(
     [
         syllable(
             segments,
-            [select("g")],
-            [select("a")],
-            [select("p")],
+            [strident & (alveolar | glottal), -strident & -voiced & -aspirated, +trill],
+            [syllabic],
+            [],
         ),
         syllable(
             segments,
-            [select("b")],
-            [select("u")],
+            [select("s")],
+            [syllabic],
             [],
         ),
     ]
-).show().then(each_segment(voicing_assim)).show()
+).show().then(each_segment(intervocalic_voicing)).show().then(each_segment(rhoticization)).show()

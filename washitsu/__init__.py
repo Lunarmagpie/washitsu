@@ -4,6 +4,7 @@ import copy
 from dataclasses import dataclass
 import builtins
 import random
+import typing as t
 
 
 def lists_are_equal(a, b):
@@ -13,6 +14,7 @@ def lists_are_equal(a, b):
 class HigherOrderFunction:
     def __init__(self, callable: t.Any) -> None:
         self.callable = callable
+        self.name = callable.__name__
 
     def __call__(self, *args, **kwargs):
         return self.callable(*args, **kwargs)
@@ -110,6 +112,11 @@ class Segment:
     def __add__(self, other: Feature):
         changed = copy.copy(self)
         changed.features = copy.copy(self.features) + [other]
+        return changed
+    
+    def __sub__(self, other: Feature):
+        changed = copy.copy(self)
+        changed.features = list(filter(lambda x: x is not other, copy.copy(self.features)))
         return changed
 
     def __eq__(self, other):
@@ -270,8 +277,8 @@ DIACRITICS = [
 ]
 
 
-def ipa(*symbols: list[str]):
-    output = []
+def ipa(*symbols: list[str]) -> list[Segment]:
+    output: list[Segment] = []
     for symbol in symbols:
         extra_features = []
         for diacritic in DIACRITICS:
