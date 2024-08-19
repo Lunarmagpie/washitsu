@@ -1,5 +1,4 @@
 from washitsu import *
-from washitsu import _
 from pprint import pprint
 
 
@@ -33,26 +32,15 @@ segments = ipa(
     "ə",
 )
 
-
-def voicing_assim(word: Word, segment: Segment):
-    if word.surrounds([], segment, [voiced & consonantal]):
-        pass
-
-
-
-Word(
-    [
-        syllable(
-            segments,
-            [strident & (alveolar | glottal), -strident & -voiced & -aspirated, +trill],
-            [+syllabic],
-            [+consonantal],
-        ),
-        syllable(
-            segments,
-            [consonantal],
-            [syllabic],
-            [consonantal],
-        ),
-    ]
-).show().then(each_segment(voicing_assim))
+pprint(
+    Word(
+        [
+            syllable(
+                segments,
+                [select("b")],
+                [],
+                [],
+            ),
+        ]
+    )
+)
