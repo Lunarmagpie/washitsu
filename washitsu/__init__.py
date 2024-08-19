@@ -1,15 +1,13 @@
 from __future__ import annotations
-
-from dataclasses import dataclass
-import typing as t
-import random
 import itertools
 import copy
+from dataclasses import dataclass
 import builtins
+import random
 
 
 def lists_are_equal(a, b):
-    return all(a == b for (a, b) in zip(a.sort(), b.sort()))
+    return builtins.all(x in b for x in a) and builtins.all(x in a for x in b)
 
 
 class HigherOrderFunction:
@@ -58,6 +56,9 @@ class Feature(HigherOrderFunction):
     def __repr__(self):
         return self.name
 
+    def __eq__(self, other):
+        return self.name is other.name
+
     def has(self, x: list[Feature]):
         return self in x
 
@@ -75,7 +76,7 @@ pharyngeal = Feature("Pharyngeal")
 glottal = Feature("Glottal")
 # Articulation
 consonantal = Feature("Consonantal")
-stop = Feature("stop")
+stop = Feature("Stop")
 trill = Feature("Trill")
 tap = Feature("Tap")
 strident = Feature("Strident")
@@ -107,7 +108,6 @@ class Segment:
         changed.features += [other]
         return changed
 
-
     def __eq__(self, other):
         return (
             isinstance(self, Segment)
@@ -115,6 +115,9 @@ class Segment:
             and self.ipa_symbol == other.ipa_symbol
             and lists_are_equal(self.features, other.features)
         )
+
+    def has(self, feautres):
+        return feautres(self.features)
 
 
 SEGMENTS = [
@@ -305,7 +308,10 @@ class Syllable:
 
 
 def _default_word_printer(segment: Segment) -> str:
-    return segment.ipa_symbol
+    for big_seg in SEGMENTS:
+        if lists_are_equal(segment.features, big_seg.features):
+            return big_seg.ipa_symbol
+    raise Exception(f"Can not find matching segment: {segment.features}")
 
 
 def each_segment(f):
@@ -369,6 +375,7 @@ class Word:
 
     def then(self, sound_change: t.Callable[[Word], Word]) -> t.Self:
         return sound_change(self)
+
 
 def select(symbol: str):
     features = ipa(symbol)[0].features

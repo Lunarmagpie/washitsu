@@ -1,22 +1,23 @@
 from washitsu import *
+from washitsu.rules import *
 from pprint import pprint
 
 
 segments = ipa(
     "m",
     "n",
-    "pʰ",
-    "tʰ",
-    "kʰ",
-    "kʷʰ",
+    # "pʰ",
+    # "tʰ",
+    # "kʰ",
+    # "kʷʰ",
     "p",
     "t",
     "k",
-    "kʷ",
+    # "kʷ",
     "b",
     "d",
     "g",
-    "gʷ",
+    # "gʷ",
     "s",
     "x",
     "h",
@@ -31,17 +32,6 @@ segments = ipa(
     "a",
     "ə",
 )
-
-
-def voicing_assim(word: Word, segment: Segment) -> Segment:
-    if word.surrounds([], segment, [voiced & consonantal]):
-        return segment + voiced
-    return segment
-
-
-def show(a):
-    return str(a.features)
-
 
 Word(
     [
@@ -58,4 +48,4 @@ Word(
             [consonantal],
         ),
     ]
-).show(show).then(each_segment(voicing_assim)).show(show)
+).show().then(each_segment(voicing_assim)).show()
