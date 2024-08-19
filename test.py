@@ -1,5 +1,4 @@
 from washitsu import *
-from washitsu import _
 from pprint import pprint
 
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import typing as t
 import random
+import itertools
 import copy
 import builtins
 
@@ -384,7 +385,7 @@ SEGMENTS = [
 ]
 
 
-def ipa(*symbols: list[str]):
+def ipa(*symbols: list[str]) -> list[Segment]:
     output = []
     for symbol in symbols:
         extra_features = []
@@ -396,6 +397,23 @@ def ipa(*symbols: list[str]):
         segment = next(filter(lambda s: s.ipa_symbol in symbol, SEGMENTS))
         new_segment = Segment(symbol, segment.features + extra_features)
         output.append(new_segment)
+    return output
+
+
+def select(symbol: str):
+    features = ipa(symbol)[0].features
+    full_features = list(itertools.chain.from_iterable([s.features for s in SEGMENTS]))
+    all_features: list[Feature] = []
+    [all_features.append(x) for x in full_features if x not in all_features]
+
+    output = features[0]
+    for i in range(0, len(all_features) - 1):
+        next_feature = all_features[i + 1]
+        if next_feature in features:
+            output = output & next_feature
+        else:
+            output = output & -next_feature
+
     return output
 
 
@@ -424,6 +442,7 @@ class Syllable:
     onset: list[Segment]
     nucleus: list[Segment]
     coda: list[Segment]
+
     # supersegmentals: list[Feature]
     #
     def __eq__(self, other):
