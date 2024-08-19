@@ -1,4 +1,4 @@
-from washitsu import bilabial, stop, ipa, any, all, syllable, SEGMENTS, low, high
+from washitsu import bilabial, stop, ipa, any, all, syllable, SEGMENTS, low, high, Word
 from pprint import pprint
 
 
@@ -33,10 +33,18 @@ segments = ipa(
 )
 
 pprint(
-    syllable(
+    Word([
+	    syllable(
         segments,
         [bilabial],
         [low, high],
         [bilabial],
-    )
+	    ),
+	    syllable(
+        segments,
+        [bilabial],
+        [low, high],
+        [bilabial],
+	    )
+   ])
 )
