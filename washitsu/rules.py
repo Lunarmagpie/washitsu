@@ -25,6 +25,6 @@ def intervocalic_voicing(word: Word, segment: Segment) -> Segment:
 
 
 def rhoticization(word: Word, segment: Segment) -> Segment:
-    if segment.has(find("z")):
+    if segment.has(select("z")):
         return find("r")
     return segment
