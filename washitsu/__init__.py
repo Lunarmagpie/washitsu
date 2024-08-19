@@ -110,11 +110,16 @@ nasal = Feature("Nasal")
 delayed_release = Feature("DelayedRelease")
 # Vowels
 syllabic = Feature("Syllabic")
-high = Feature("high")
-mid_high = Feature("Midhigh")
-low = Feature("Low")
-back = Feature("back")
-tense = Feature("Tense")
+front = Feature("Front")
+central = Feature("Central")
+back = Feature("Back")
+close = Feature("Close")
+near_close = Feature("NearClose")
+close_mid = Feature("CloseMid")
+mid = Feature("Mid")
+open_mid = Feature("OpenMid")
+near_open = Feature("NearOpen")
+open = Feature("Open")
 # Diacritic
 labialized = Feature("Labialized")
 palatalized = Feature("Palatalized")
@@ -277,25 +282,39 @@ SEGMENTS = [
             sonorant, alveolar, lateral, voiced]),
     Segment("ʟ", [consonantal, continuant,
             sonorant, alveolar, lateral, voiced]),
-    Segment("ɪ", [syllabic, voiced, sonorant, continuant, high]),
-    Segment("ʊ", [syllabic, voiced, sonorant,
-            continuant, high, back, labialized]),
-    Segment("ɛ", [syllabic, voiced, sonorant, continuant, mid_high]),
-    Segment("ɔ", [syllabic, voiced, sonorant,
-            continuant, mid_high, back, labialized]),
-    Segment("ɐ", [syllabic, voiced, sonorant, continuant, low]),
-    Segment("i", [syllabic, voiced, sonorant, continuant, high, tense]),
-    Segment(
-        "u", [syllabic, voiced, sonorant, continuant,
-              high, back, labialized, tense]
-    ),
-    Segment("e", [syllabic, voiced, sonorant, continuant, mid_high, tense]),
-    Segment(
-        "o", [syllabic, voiced, sonorant, continuant,
-              mid_high, back, labialized, tense]
-    ),
-    Segment("a", [syllabic, voiced, sonorant, continuant, low, tense]),
-    Segment("ə", [syllabic, voiced, sonorant, continuant]),
+    Segment("i", [syllabic, voiced, sonorant, front, close]),
+    Segment("y", [syllabic, voiced, sonorant, front, labialized, close]),
+    Segment("ɨ", [syllabic, voiced, sonorant, central, close]),
+    Segment("ʉ", [syllabic, voiced, sonorant, central, labialized, close]),
+    Segment("ɯ", [syllabic, voiced, sonorant, back, close]),
+    Segment("u", [syllabic, voiced, sonorant, back, labialized, close]),
+    Segment("ɪ", [syllabic, voiced, sonorant, front, near_close]),
+    Segment("ʏ", [syllabic, voiced, sonorant, front, labialized, near_close]),
+    Segment("ʊ", [syllabic, voiced, sonorant, back, labialized, near_close]),
+    Segment("e", [syllabic, voiced, sonorant, front, close_mid]),
+    Segment("ø", [syllabic, voiced, sonorant, front, labialized, close_mid]),
+    Segment("ɘ", [syllabic, voiced, sonorant, central, close_mid]),
+    Segment("ɵ", [syllabic, voiced, sonorant, central, labialized, close_mid]),
+    Segment("ɤ", [syllabic, voiced, sonorant, back, close_mid]),
+    Segment("o", [syllabic, voiced, sonorant, back, labialized, close_mid]),
+    Segment("e̞", [syllabic, voiced, sonorant, front, mid]),
+    Segment("ø̞", [syllabic, voiced, sonorant, front, labialized, mid]),
+    Segment("ə", [syllabic, voiced, sonorant, central, mid]),
+    Segment("ɤ̞", [syllabic, voiced, sonorant, back, mid]),
+    Segment("o̞", [syllabic, voiced, sonorant, back, labialized, mid]),
+    Segment("ɛ", [syllabic, voiced, sonorant, front, open_mid]),
+    Segment("œ", [syllabic, voiced, sonorant, front, labialized, open_mid]),
+    Segment("ɜ", [syllabic, voiced, sonorant, central, open_mid]),
+    Segment("ɞ", [syllabic, voiced, sonorant, central, labialized, open_mid]),
+    Segment("ʌ", [syllabic, voiced, sonorant, back, open_mid]),
+    Segment("ɔ", [syllabic, voiced, sonorant, back, labialized, open_mid]),
+    Segment("æ", [syllabic, voiced, sonorant, front, near_open]),
+    Segment("ɐ", [syllabic, voiced, sonorant, central, near_open]),
+    Segment("a", [syllabic, voiced, sonorant, front, open]),
+    Segment("ɶ", [syllabic, voiced, sonorant, front, labialized, open]),
+    Segment("ä", [syllabic, voiced, sonorant, central, open]),
+    Segment("ɑ", [syllabic, voiced, sonorant, back, open]),
+    Segment("ɒ", [syllabic, voiced, sonorant, back, labialized, open])
 ]
 
 DIACRITICS = [
