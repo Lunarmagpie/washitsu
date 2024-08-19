@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "washitsu"
+version = "0.1.0"
+description = ""
+authors = ["Lunarmagpie <bambolambo0@gmail.com>"]
+license = "GPLv2"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pyright = "^1.1.376"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
