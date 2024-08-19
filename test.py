@@ -33,19 +33,30 @@ segments = ipa(
     "ə",
 )
 
-Word(
-    [
-        syllable(
-            segments,
-            [strident & (alveolar | glottal), -strident & -voiced & -aspirated, +trill],
-            [syllabic],
-            [],
-        ),
-        syllable(
-            segments,
-            [select("s")],
-            [syllabic],
-            [],
-        ),
-    ]
-).show().then(each_segment(intervocalic_voicing)).show().then(each_segment(rhoticization)).show()
+(
+    Word(
+        [
+            syllable(
+                segments,
+                [
+                    strident & (alveolar | glottal),
+                    -strident & -voiced & -aspirated,
+                    +trill,
+                ],
+                [syllabic],
+                [],
+            ),
+            syllable(
+                segments,
+                [select("s")],
+                [syllabic],
+                [],
+            ),
+        ]
+    )
+    .show()
+    .then(each_segment(intervocalic_voicing))
+    .show()
+    .then(each_segment(rhoticization))
+    .show()
+)
