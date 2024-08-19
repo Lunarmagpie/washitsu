@@ -40,9 +40,9 @@ def voicing_assim(word: Word, segment: Segment) -> Segment:
     return segment
 
 
-
 def show(a):
     return str(a.features)
+
 
 Word(
     [
