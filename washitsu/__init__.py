@@ -94,8 +94,11 @@ mid_high = Feature("Midhigh")
 low = Feature("Low")
 back = Feature("back")
 tense = Feature("Tense")
+# Diacritic
 labialized = Feature("Labialized")
 palatalized = Feature("Palatalized")
+velarized = Feature("Velarized")
+pharyngealized = Feature("Pharyngealized")
 
 
 @dataclass
@@ -257,6 +260,9 @@ DIACRITICS = [
     Segment("ʰ", [aspirated]),
     Segment("ʷ", [labialized]),
     Segment("ʲ", [palatalized]),
+    Segment("ˠ", [velarized]),
+    Segment("ˤ", [pharyngealized]),
+    Segment("̃", [nasal]),
 ]
 
 
@@ -377,7 +383,7 @@ class Word:
         return sound_change(self)
 
 
-def select(symbol: str):
+def select(symbol: str) -> Feature:
     features = ipa(symbol)[0].features
     full_features = list(itertools.chain.from_iterable([s.features for s in SEGMENTS]))
     all_features: list[Feature] = []
