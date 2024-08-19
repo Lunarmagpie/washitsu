@@ -6,11 +6,14 @@ import random
 
 import builtins
 
+
 def all(*argv):
     return lambda x: builtins.all(arg.has(x) for arg in argv)
 
+
 def any(*argv):
     return lambda x: builtins.any(arg.has(x) for arg in argv)
+
 
 @dataclass
 class Feature:
@@ -195,7 +198,9 @@ SEGMENTS = [
     Segment("ɔ", [syllabic, voiced, sonorant, continuant, mid_high, back, labialized]),
     Segment("ɐ", [syllabic, voiced, sonorant, continuant, low]),
     Segment("i", [syllabic, voiced, sonorant, continuant, high, tense]),
-    Segment("u", [syllabic, voiced, sonorant, continuant, high, back, labialized, tense]),
+    Segment(
+        "u", [syllabic, voiced, sonorant, continuant, high, back, labialized, tense]
+    ),
     Segment("e", [syllabic, voiced, sonorant, continuant, mid_high, tense]),
     Segment(
         "o", [syllabic, voiced, sonorant, continuant, mid_high, back, labialized, tense]
@@ -219,24 +224,25 @@ def ipa(*symbols: list[str]):
         output.append(new_segment)
     return output
 
+
 def syllable(
-	segments: list[Segment],
-	onset: list[t.Callable[[list[Feature]], bool]],
-	nucleus: list[t.Callable[[list[Feature]], bool]],
-	coda: list[t.Callable[[list[Feature]], bool]],
+    segments: list[Segment],
+    onset: list[t.Callable[[list[Feature]], bool]],
+    nucleus: list[t.Callable[[list[Feature]], bool]],
+    coda: list[t.Callable[[list[Feature]], bool]],
 ):
-	output = []
-	
-	for segment in [onset, nucleus, coda]:
-		outputoutput = []
+    output = []
 
-		for segmentsegment in segment:
-			stuff = list(filter(lambda x: segmentsegment(x.features), segments))
-			outputoutput += [random.choice(stuff)]
+    for segment in [onset, nucleus, coda]:
+        outputoutput = []
 
-		output += [outputoutput]
+        for segmentsegment in segment:
+            stuff = list(filter(lambda x: segmentsegment(x.features), segments))
+            outputoutput += [random.choice(stuff)]
 
-	return Syllable(*output)
+        output += [outputoutput]
+
+    return Syllable(*output)
 
 
 @dataclass
