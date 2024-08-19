@@ -450,18 +450,18 @@ class Word:
         return segments
 
     @t.overload
-    def matches(self, before, syllable: Syllable, after) -> bool:
+    def matches(self, before, segment: Segment, after) -> bool:
         ...
 
     @t.overload
-    def matches(self, before, syllable: Syllable) -> bool:
+    def matches(self, before, segment: Segment) -> bool:
         ...
 
     @t.overload
-    def matches(self, syllable: Syllable, after) -> bool:
+    def matches(self, segment: Segment, after) -> bool:
         ...
     @t.overload
-    def matches(self, syllable: Syllable) -> bool:
+    def matches(self, segment: Segment) -> bool:
         ...
 
     def matches(self, *args):
