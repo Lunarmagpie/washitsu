@@ -33,6 +33,13 @@ segments = ipa(
     "ə",
 )
 
+
+def voicing_assim(word: Word, segment: Segment):
+    if word.surrounds([], segment, [voiced & consonantal]):
+        pass
+
+
+
 Word(
     [
         syllable(
@@ -48,4 +55,4 @@ Word(
             [consonantal],
         ),
     ]
-).show()
+).show().then(each_segment(voicing_assim))

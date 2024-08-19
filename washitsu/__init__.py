@@ -7,6 +7,10 @@ import random
 import builtins
 
 
+def lists_are_equal(a, b):
+    return all(a == b for (a, b) in zip(a.sort(), b.sort()))
+
+
 class HigherOrderFunction:
     def __init__(self, callable: t.Any) -> None:
         self.callable = callable
@@ -90,6 +94,14 @@ labialized = Feature("Labialized")
 class Segment:
     ipa_symbol: str
     features: list[Feature]
+
+    def __eq__(self, other):
+        return (
+            isinstance(self, Segment)
+            and isinstance(other, Segment)
+            and self.ipa_symbol == other.ipa_symbol
+            and lists_are_equal(self.features, other.features)
+        )
 
 
 SEGMENTS = [
@@ -270,10 +282,33 @@ class Syllable:
     nucleus: list[Segment]
     coda: list[Segment]
     # supersegmentals: list[Feature]
+    #
+    def __eq__(self, other):
+        return (
+            lists_are_equal(self.onset, other.onset)
+            and lists_are_equal(self.nucleus, other.nucleus)
+            and lists_are_equal(self.coda, other.coda)
+        )
 
 
 def _default_word_printer(segment: Segment) -> str:
     return segment.ipa_symbol
+
+
+def each_segment(f):
+    def out(word):
+        syllables = []
+
+        for syllable in word.syllables:
+            onset = list(map(lambda s: f(word, s), syllable.onset))
+            nucleus = list(map(lambda s: f(word, s), syllable.nucleus))
+            coda = list(map(lambda s: f(word, s), syllable.coda))
+
+            syllables.append(Syllable(onset, nucleus, coda))
+
+        return Word(syllables)
+
+    return out
 
 
 @dataclass
@@ -285,6 +320,39 @@ class Word:
         for syllable in self.syllables:
             output += [*syllable.onset, *syllable.nucleus, *syllable.coda]
         print("".join([printer(x) for x in output]))
+        return self
 
-    def then(self, sound_change: t.Callable[[Segment], Segment]) -> t.Self:
-        pass
+    def flatten(self):
+        segments = []
+
+        for syllable in self.syllables:
+            segments += [*syllable.onset, *syllable.nucleus, *syllable.coda]
+
+        return segments
+
+    def surrounds(self, before, syllable, after):
+        syllables = self.flatten()
+        index = syllables.index(syllable)
+
+        if (index - len(before)) < 0:
+            return False
+
+        if (index + len(after)) >= len(syllables):
+            return False
+
+        before_part = syllables[index - len(before) : index]
+        after_part = syllables[index : index + len(before)]
+
+        def matches(parts, funcs):
+            return builtins.all(b(a.features) for (a, b) in zip(parts, funcs))
+
+        if not matches(before_part, before):
+            return False
+
+        if not matches(after_part, after):
+            return False
+
+        return True
+
+    def then(self, sound_change: t.Callable[[Word], Word]) -> t.Self:
+        return sound_change(self)
