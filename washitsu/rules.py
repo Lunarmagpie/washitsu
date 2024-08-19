@@ -23,6 +23,7 @@ def intervocalic_voicing(word: Word, segment: Segment) -> Segment:
         return segment + voiced
     return segment
 
+
 def rhoticization(word: Word, segment: Segment) -> Segment:
     if segment.has(select("z")):
         segment.features += [select("r")]
