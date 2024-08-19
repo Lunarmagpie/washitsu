@@ -6,6 +6,60 @@ import random
 import typing as t
 from pprint import pprint
 
+__all__ = [
+    "Segment",
+    "Word",
+    "syllable",
+    "Syllable",
+    "ipa",
+    "each_segment",
+    "select",
+    "find",
+    "probability",
+    "_",
+    "bilabial",
+    "labiodental",
+    "alveolar",
+    "postalveolar",
+    "retroflex",
+    "palatal",
+    "velar",
+    "uvular",
+    "pharyngeal",
+    "glottal",
+    # Articulation
+    "consonantal",
+    "stop",
+    "trill",
+    "tap",
+    "strident",
+    "sibilant",
+    "lateral",
+    "voiced",
+    "aspirated",
+    "sonorant",
+    "continuant",
+    "nasal",
+    "delayed_release",
+    # Vowels
+    "syllabic",
+    "front",
+    "central",
+    "back",
+    "close",
+    "near_close",
+    "close_mid",
+    "mid",
+    "open_mid",
+    "near_open",
+    "open",
+    # Diacritic
+    "labialized",
+    "palatalized",
+    "velarized",
+    "pharyngealized",
+]
+
 
 def lists_are_equal(a, b):
     return all(x in b for x in a) and all(x in a for x in b)
@@ -346,7 +400,7 @@ def syllable(
         outputoutput = []
 
         for segmentsegment in segment:
-            if (not segmentsegment):
+            if not segmentsegment:
                 continue
             stuff = list(filter(lambda x: segmentsegment(x.features), segments))
             outputoutput += [random.choice(stuff)]
@@ -462,6 +516,7 @@ class Word:
     @t.overload
     def matches(self, segment: Segment, after: list) -> bool:
         ...
+
     @t.overload
     def matches(self, segment: Segment) -> bool:
         ...
