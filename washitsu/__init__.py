@@ -460,6 +460,9 @@ class Word:
     @t.overload
     def matches(self, syllable: Syllable, after) -> bool:
         ...
+    @t.overload
+    def matches(self, syllable: Syllable) -> bool:
+        ...
 
     def matches(self, *args):
         if len(args) == 3:
@@ -470,6 +473,9 @@ class Word:
 
         if len(args) == 2 and isinstance(args[1], Syllable):
             return self._matches(args[0], args[1], [])
+
+        if len(args) == 1:
+            return self._matches([], args[0], [])
 
         raise Exception("Unknown overload")
 
