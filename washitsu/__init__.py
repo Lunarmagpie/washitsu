@@ -25,6 +25,9 @@ class HigherOrderFunction:
     def __or__(self, other):
         return any(self, other)
 
+    def __xor__(self, other):
+        return xor(self, other)
+
     def __neg__(self):
         return not_combinator(self)
 
@@ -39,6 +42,8 @@ def all(*argv):
 def any(*argv):
     return HigherOrderFunction(lambda x: builtins.any(arg(x) for arg in argv))
 
+def xor(left, right):
+    return HigherOrderFunction(lambda x: left(x) ^ right(x))
 
 def not_combinator(func):
     return HigherOrderFunction(lambda x: not func(x))
