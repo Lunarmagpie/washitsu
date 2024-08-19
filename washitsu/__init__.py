@@ -113,10 +113,12 @@ class Segment:
         changed = copy.copy(self)
         changed.features = copy.copy(self.features) + [other]
         return changed
-    
+
     def __sub__(self, other: Feature):
         changed = copy.copy(self)
-        changed.features = list(filter(lambda x: x is not other, copy.copy(self.features)))
+        changed.features = list(
+            filter(lambda x: x is not other, copy.copy(self.features))
+        )
         return changed
 
     def __eq__(self, other):
@@ -380,10 +382,10 @@ class Word:
             return False
 
         before_part = syllables[index - len(before) : index]
-        after_part = syllables[index + 1: index + 1 + len(after)]
+        after_part = syllables[index + 1 : index + 1 + len(after)]
 
         def matches(parts, funcs):
-            if (len(funcs) == 0):
+            if len(funcs) == 0:
                 return True
             return builtins.all(b(a.features) for (a, b) in zip(parts, funcs))
 
@@ -414,3 +416,7 @@ def select(symbol: str) -> Feature:
             output = output & -next_feature
 
     return output
+
+
+def find(symbol: str) -> Segment:
+    return next(filter(lambda x: x.ipa_symbol == symbol, SEGMENTS))
