@@ -55,8 +55,6 @@ segments = ipa(
         ]
     )
     .show()
-    .then(each_segment(intervocalic_voicing))
-    .show()
-    .then(each_segment(rhoticization))
+    .then(each_segment(gnarsh_chain_shift))
     .show()
 )
