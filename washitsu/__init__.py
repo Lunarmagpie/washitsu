@@ -2,56 +2,66 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import typing as t
+import random
 
+import builtins
 
-def and_combinator(*argv):
-    return lambda x: all(arg.has(x) for arg in argv)
+def all(*argv):
+    return lambda x: builtins.all(arg.has(x) for arg in argv)
 
+def any(*argv):
+    return lambda x: builtins.any(arg.has(x) for arg in argv)
 
 @dataclass
 class Feature:
     name: str
 
+    def __call__(self, *args, **kwargs):
+        return self.has(*args, **kwargs)
+
     def __and__(self, other):
-        return and_combinator(self, other)
+        return all(self, other)
+
+    def __or__(self, other):
+        return any(self, other)
 
     def has(self, x: list[Feature]):
         return self in x
 
 
 # Place
-Bilabial = Feature("Bilabial")
-Labiodental = Feature("Labiodental")
-Alveolar = Feature("Alveolar")
-PostAlveolar = Feature("PostAlveolar")
-Retroflex = Feature("Retroflex")
-Palatal = Feature("Palatal")
-Velar = Feature("Velar")
-Uvular = Feature("Uvular")
-Pharyngeal = Feature("Pharyngeal")
-Glottal = Feature("Glottal")
+bilabial = Feature("Bilabial")
+labiodental = Feature("Labiodental")
+alveolar = Feature("Alveolar")
+postalveolar = Feature("PostAlveolar")
+retroflex = Feature("Retroflex")
+palatal = Feature("Palatal")
+velar = Feature("Velar")
+uvular = Feature("Uvular")
+pharyngeal = Feature("Pharyngeal")
+glottal = Feature("Glottal")
 # Articulation
-Consonantal = Feature("Consonantal")
-Stop = Feature("Stop")
-Trill = Feature("Trill")
-Tap = Feature("Tap")
-Strident = Feature("Strident")
-Sibilant = Feature("Sibilant")
-Lateral = Feature("Lateral")
-Voiced = Feature("Voiced")
-Aspirated = Feature("Aspirated")
-Sonorant = Feature("Sonorant")
-Continuant = Feature("Continuant")
-Nasal = Feature("Nasal")
-DelayedRelease = Feature("DelayedRelease")
+consonantal = Feature("Consonantal")
+stop = Feature("stop")
+trill = Feature("Trill")
+tap = Feature("Tap")
+strident = Feature("Strident")
+sibilant = Feature("Sibilant")
+lateral = Feature("Lateral")
+voiced = Feature("Voiced")
+aspirated = Feature("Aspirated")
+sonorant = Feature("Sonorant")
+continuant = Feature("Continuant")
+nasal = Feature("Nasal")
+delayed_release = Feature("DelayedRelease")
 # Vowels
-Syllabic = Feature("Syllabic")
-High = Feature("High")
-MidHigh = Feature("MidHigh")
-Low = Feature("Low")
-Back = Feature("Back")
-Tense = Feature("Tense")
-Rounded = Feature("Rounded")
+syllabic = Feature("Syllabic")
+high = Feature("high")
+mid_high = Feature("Midhigh")
+low = Feature("Low")
+back = Feature("back")
+tense = Feature("Tense")
+labialized = Feature("Labialized")
 
 
 @dataclass
@@ -61,137 +71,137 @@ class Segment:
 
 
 SEGMENTS = [
-    Segment("p", [Consonantal, Bilabial, Stop]),
-    Segment("b", [Consonantal, Bilabial, Stop, Voiced]),
-    Segment("t", [Consonantal, Alveolar, Stop]),
-    Segment("d", [Consonantal, Alveolar, Stop, Voiced]),
-    Segment("ʈ", [Consonantal, Retroflex, Stop]),
-    Segment("ɖ", [Consonantal, Retroflex, Stop, Voiced]),
-    Segment("c", [Consonantal, Palatal, Stop]),
-    Segment("ɟ", [Consonantal, Palatal, Stop, Voiced]),
-    Segment("k", [Consonantal, Velar, Stop]),
-    Segment("g", [Consonantal, Velar, Stop, Voiced]),
-    Segment("q", [Consonantal, Uvular, Stop]),
-    Segment("ɢ", [Consonantal, Uvular, Stop, Voiced]),
-    Segment("ʔ", [Glottal, Uvular, Stop]),
-    Segment("t͡s", [Consonantal, Alveolar, Stop, DelayedRelease]),
-    Segment("d͡z", [Consonantal, Alveolar, Stop, Voiced, DelayedRelease]),
-    Segment("t͡ʃ", [Consonantal, PostAlveolar, Stop, DelayedRelease]),
-    Segment("d͡ʒ", [Consonantal, PostAlveolar, Stop, Voiced, DelayedRelease]),
-    Segment("t͡ɕ", [Consonantal, Alveolar, Palatal, Stop, DelayedRelease]),
+    Segment("p", [consonantal, bilabial, stop]),
+    Segment("b", [consonantal, bilabial, stop, voiced]),
+    Segment("t", [consonantal, alveolar, stop]),
+    Segment("d", [consonantal, alveolar, stop, voiced]),
+    Segment("ʈ", [consonantal, retroflex, stop]),
+    Segment("ɖ", [consonantal, retroflex, stop, voiced]),
+    Segment("c", [consonantal, palatal, stop]),
+    Segment("ɟ", [consonantal, palatal, stop, voiced]),
+    Segment("k", [consonantal, velar, stop]),
+    Segment("g", [consonantal, velar, stop, voiced]),
+    Segment("q", [consonantal, uvular, stop]),
+    Segment("ɢ", [consonantal, uvular, stop, voiced]),
+    Segment("ʔ", [glottal, uvular, stop]),
+    Segment("t͡s", [consonantal, alveolar, stop, delayed_release]),
+    Segment("d͡z", [consonantal, alveolar, stop, voiced, delayed_release]),
+    Segment("t͡ʃ", [consonantal, postalveolar, stop, delayed_release]),
+    Segment("d͡ʒ", [consonantal, postalveolar, stop, voiced, delayed_release]),
+    Segment("t͡ɕ", [consonantal, alveolar, palatal, stop, delayed_release]),
     Segment(
         "d͡ʑ",
-        [Consonantal, Alveolar, Palatal, Stop, Voiced, DelayedRelease],
+        [consonantal, alveolar, palatal, stop, voiced, delayed_release],
     ),
-    Segment("ʈ͡ʂ", [Consonantal, Retroflex, Stop, DelayedRelease]),
-    Segment("ɖ͡ʐ", [Consonantal, Retroflex, Stop, Voiced, DelayedRelease]),
+    Segment("ʈ͡ʂ", [consonantal, retroflex, stop, delayed_release]),
+    Segment("ɖ͡ʐ", [consonantal, retroflex, stop, voiced, delayed_release]),
     Segment(
         "t͡ɬ",
-        [Consonantal, Alveolar, Palatal, Stop, Lateral, DelayedRelease],
+        [consonantal, alveolar, palatal, stop, lateral, delayed_release],
     ),
     Segment(
         "d͡ɮ",
-        [Consonantal, Alveolar, Palatal, Stop, Voiced, Lateral, DelayedRelease],
+        [consonantal, alveolar, palatal, stop, voiced, lateral, delayed_release],
     ),
-    Segment("m̥", [Consonantal, Bilabial, Stop, Sonorant, Nasal]),
-    Segment("ɱ̊", [Consonantal, Labiodental, Stop, Sonorant, Nasal]),
-    Segment("n̥", [Consonantal, Alveolar, Stop, Sonorant, Nasal]),
-    Segment("ɳ̊", [Consonantal, Retroflex, Stop, Sonorant, Nasal]),
-    Segment("ɲ̊", [Consonantal, Palatal, Stop, Sonorant, Nasal]),
-    Segment("ŋ̊", [Consonantal, Velar, Stop, Sonorant, Nasal]),
-    Segment("ɴ̥", [Consonantal, Uvular, Stop, Sonorant, Nasal]),
-    Segment("m", [Consonantal, Bilabial, Stop, Sonorant, Nasal, Voiced]),
-    Segment("ɱ", [Consonantal, Labiodental, Stop, Sonorant, Nasal, Voiced]),
-    Segment("n", [Consonantal, Alveolar, Stop, Sonorant, Nasal, Voiced]),
-    Segment("ɳ", [Consonantal, Retroflex, Stop, Sonorant, Nasal, Voiced]),
-    Segment("ɲ", [Consonantal, Palatal, Stop, Sonorant, Nasal, Voiced]),
-    Segment("ŋ", [Consonantal, Velar, Stop, Sonorant, Nasal, Voiced]),
-    Segment("ɴ", [Consonantal, Uvular, Stop, Sonorant, Nasal, Voiced]),
-    Segment("̥ʙ", [Consonantal, Bilabial, Sonorant, Continuant, Trill]),
-    Segment("̥r", [Consonantal, Alveolar, Sonorant, Continuant, Trill]),
-    Segment("̥ʀ", [Consonantal, Uvular, Sonorant, Continuant, Trill]),
-    Segment("̥ⱱ", [Consonantal, Labiodental, Sonorant, Continuant, Tap]),
-    Segment("̥ɾ", [Consonantal, Alveolar, Sonorant, Tap]),
-    Segment("̊ɽ", [Consonantal, Retroflex, Sonorant, Tap]),
-    Segment("ʙ", [Consonantal, Bilabial, Sonorant, Continuant, Trill, Voiced]),
-    Segment("r", [Consonantal, Alveolar, Sonorant, Continuant, Trill, Voiced]),
-    Segment("ʀ", [Consonantal, Uvular, Sonorant, Continuant, Trill, Voiced]),
-    Segment("ⱱ", [Consonantal, Labiodental, Sonorant, Continuant, Tap, Voiced]),
-    Segment("ɾ", [Consonantal, Alveolar, Sonorant, Tap, Voiced]),
-    Segment("ɽ", [Consonantal, Retroflex, Sonorant, Tap, Voiced]),
-    Segment("ɸ", [Consonantal, Continuant, Bilabial, Strident]),
-    Segment("β", [Consonantal, Continuant, Bilabial, Strident, Voiced]),
-    Segment("f", [Consonantal, Continuant, Labiodental, Strident]),
-    Segment("v", [Consonantal, Continuant, Labiodental, Strident, Voiced]),
-    Segment("θ", [Consonantal, Continuant, Alveolar, Strident]),
-    Segment("ð", [Consonantal, Continuant, Alveolar, Strident, Voiced]),
-    Segment("s", [Consonantal, Continuant, Alveolar, Strident, Sibilant]),
-    Segment("z", [Consonantal, Continuant, Alveolar, Strident, Sibilant, Voiced]),
-    Segment("ɬ", [Consonantal, Continuant, Alveolar, Strident, Lateral]),
-    Segment("ɮ", [Consonantal, Continuant, Alveolar, Strident, Lateral, Voiced]),
-    Segment("ʃ", [Consonantal, Continuant, PostAlveolar, Strident, Sibilant]),
+    Segment("m̥", [consonantal, bilabial, stop, sonorant, nasal]),
+    Segment("ɱ̊", [consonantal, labiodental, stop, sonorant, nasal]),
+    Segment("n̥", [consonantal, alveolar, stop, sonorant, nasal]),
+    Segment("ɳ̊", [consonantal, retroflex, stop, sonorant, nasal]),
+    Segment("ɲ̊", [consonantal, palatal, stop, sonorant, nasal]),
+    Segment("ŋ̊", [consonantal, velar, stop, sonorant, nasal]),
+    Segment("ɴ̥", [consonantal, uvular, stop, sonorant, nasal]),
+    Segment("m", [consonantal, bilabial, stop, sonorant, nasal, voiced]),
+    Segment("ɱ", [consonantal, labiodental, stop, sonorant, nasal, voiced]),
+    Segment("n", [consonantal, alveolar, stop, sonorant, nasal, voiced]),
+    Segment("ɳ", [consonantal, retroflex, stop, sonorant, nasal, voiced]),
+    Segment("ɲ", [consonantal, palatal, stop, sonorant, nasal, voiced]),
+    Segment("ŋ", [consonantal, velar, stop, sonorant, nasal, voiced]),
+    Segment("ɴ", [consonantal, uvular, stop, sonorant, nasal, voiced]),
+    Segment("̥ʙ", [consonantal, bilabial, sonorant, continuant, trill]),
+    Segment("̥r", [consonantal, alveolar, sonorant, continuant, trill]),
+    Segment("̥ʀ", [consonantal, uvular, sonorant, continuant, trill]),
+    Segment("̥ⱱ", [consonantal, labiodental, sonorant, continuant, tap]),
+    Segment("̥ɾ", [consonantal, alveolar, sonorant, tap]),
+    Segment("̊ɽ", [consonantal, retroflex, sonorant, tap]),
+    Segment("ʙ", [consonantal, bilabial, sonorant, continuant, trill, voiced]),
+    Segment("r", [consonantal, alveolar, sonorant, continuant, trill, voiced]),
+    Segment("ʀ", [consonantal, uvular, sonorant, continuant, trill, voiced]),
+    Segment("ⱱ", [consonantal, labiodental, sonorant, continuant, tap, voiced]),
+    Segment("ɾ", [consonantal, alveolar, sonorant, tap, voiced]),
+    Segment("ɽ", [consonantal, retroflex, sonorant, tap, voiced]),
+    Segment("ɸ", [consonantal, continuant, bilabial, strident]),
+    Segment("β", [consonantal, continuant, bilabial, strident, voiced]),
+    Segment("f", [consonantal, continuant, labiodental, strident]),
+    Segment("v", [consonantal, continuant, labiodental, strident, voiced]),
+    Segment("θ", [consonantal, continuant, alveolar, strident]),
+    Segment("ð", [consonantal, continuant, alveolar, strident, voiced]),
+    Segment("s", [consonantal, continuant, alveolar, strident, sibilant]),
+    Segment("z", [consonantal, continuant, alveolar, strident, sibilant, voiced]),
+    Segment("ɬ", [consonantal, continuant, alveolar, strident, lateral]),
+    Segment("ɮ", [consonantal, continuant, alveolar, strident, lateral, voiced]),
+    Segment("ʃ", [consonantal, continuant, postalveolar, strident, sibilant]),
     Segment(
         "ʒ",
-        [Consonantal, Continuant, PostAlveolar, Strident, Sibilant, Voiced],
+        [consonantal, continuant, postalveolar, strident, sibilant, voiced],
     ),
-    Segment("ʂ", [Consonantal, Continuant, Retroflex, Strident, Sibilant]),
+    Segment("ʂ", [consonantal, continuant, retroflex, strident, sibilant]),
     Segment(
         "ʐ",
-        [Consonantal, Continuant, Retroflex, Strident, Sibilant, Voiced],
+        [consonantal, continuant, retroflex, strident, sibilant, voiced],
     ),
-    Segment("ç", [Consonantal, Continuant, Palatal, Strident]),
-    Segment("ʝ", [Consonantal, Continuant, Palatal, Strident, Voiced]),
+    Segment("ç", [consonantal, continuant, palatal, strident]),
+    Segment("ʝ", [consonantal, continuant, palatal, strident, voiced]),
     Segment(
         "ɕ",
-        [Consonantal, Continuant, Alveolar, Palatal, Strident, Sibilant],
+        [consonantal, continuant, alveolar, palatal, strident, sibilant],
     ),
     Segment(
         "ʑ",
-        [Consonantal, Continuant, Alveolar, Palatal, Strident, Sibilant, Voiced],
+        [consonantal, continuant, alveolar, palatal, strident, sibilant, voiced],
     ),
-    Segment("x", [Consonantal, Continuant, Velar, Strident]),
-    Segment("ɣ", [Consonantal, Continuant, Velar, Strident, Voiced]),
-    Segment("χ", [Consonantal, Continuant, Uvular, Strident]),
-    Segment("ʁ", [Consonantal, Continuant, Uvular, Strident, Voiced]),
-    Segment("ħ", [Consonantal, Continuant, Pharyngeal, Strident]),
-    Segment("ʕ", [Consonantal, Continuant, Pharyngeal, Strident, Voiced]),
-    Segment("h", [Continuant, Glottal, Strident]),
-    Segment("ɦ", [Continuant, Glottal, Strident, Voiced]),
-    Segment("ʋ̥", [Consonantal, Continuant, Sonorant, Labiodental]),
-    Segment("ɹ̥", [Consonantal, Continuant, Sonorant, PostAlveolar]),
-    Segment("ɻ̊", [Consonantal, Continuant, Sonorant, Retroflex]),
-    Segment("ɰ̊", [Continuant, Sonorant, Velar]),
-    Segment("j̊", [Continuant, Sonorant, Palatal]),
-    Segment("ɥ̊", [Continuant, Sonorant, Palatal, Rounded]),
-    Segment("ʍ", [Continuant, Sonorant, Velar, Rounded]),
-    Segment("ʋ", [Consonantal, Continuant, Sonorant, Labiodental, Voiced]),
-    Segment("ɹ", [Consonantal, Continuant, Sonorant, PostAlveolar, Voiced]),
-    Segment("ɻ", [Consonantal, Continuant, Sonorant, Retroflex, Voiced]),
-    Segment("ɰ", [Continuant, Sonorant, Velar, Voiced]),
-    Segment("j", [Continuant, Sonorant, Palatal, Voiced]),
-    Segment("ɥ", [Continuant, Sonorant, Palatal, Rounded, Voiced]),
-    Segment("w", [Continuant, Sonorant, Velar, Rounded, Voiced]),
-    Segment("l̥", [Consonantal, Continuant, Sonorant, Alveolar, Lateral]),
-    Segment("ɭ̊", [Consonantal, Continuant, Sonorant, Alveolar, Lateral]),
-    Segment("ʎ̥", [Consonantal, Continuant, Sonorant, Alveolar, Lateral]),
-    Segment("ʟ̥", [Consonantal, Continuant, Sonorant, Alveolar, Lateral]),
-    Segment("l", [Consonantal, Continuant, Sonorant, Alveolar, Lateral, Voiced]),
-    Segment("ɭ", [Consonantal, Continuant, Sonorant, Alveolar, Lateral, Voiced]),
-    Segment("ʎ", [Consonantal, Continuant, Sonorant, Alveolar, Lateral, Voiced]),
-    Segment("ʟ", [Consonantal, Continuant, Sonorant, Alveolar, Lateral, Voiced]),
-    Segment("ɪ", [Syllabic, Voiced, Sonorant, Continuant, High]),
-    Segment("ʊ", [Syllabic, Voiced, Sonorant, Continuant, High, Back, Rounded]),
-    Segment("ɛ", [Syllabic, Voiced, Sonorant, Continuant, MidHigh]),
-    Segment("ɔ", [Syllabic, Voiced, Sonorant, Continuant, MidHigh, Back, Rounded]),
-    Segment("ɐ", [Syllabic, Voiced, Sonorant, Continuant, Low]),
-    Segment("i", [Syllabic, Voiced, Sonorant, Continuant, High, Tense]),
-    Segment("u", [Syllabic, Voiced, Sonorant, Continuant, High, Back, Rounded, Tense]),
-    Segment("e", [Syllabic, Voiced, Sonorant, Continuant, MidHigh, Tense]),
+    Segment("x", [consonantal, continuant, velar, strident]),
+    Segment("ɣ", [consonantal, continuant, velar, strident, voiced]),
+    Segment("χ", [consonantal, continuant, uvular, strident]),
+    Segment("ʁ", [consonantal, continuant, uvular, strident, voiced]),
+    Segment("ħ", [consonantal, continuant, pharyngeal, strident]),
+    Segment("ʕ", [consonantal, continuant, pharyngeal, strident, voiced]),
+    Segment("h", [continuant, glottal, strident]),
+    Segment("ɦ", [continuant, glottal, strident, voiced]),
+    Segment("ʋ̥", [consonantal, continuant, sonorant, labiodental]),
+    Segment("ɹ̥", [consonantal, continuant, sonorant, postalveolar]),
+    Segment("ɻ̊", [consonantal, continuant, sonorant, retroflex]),
+    Segment("ɰ̊", [continuant, sonorant, velar]),
+    Segment("j̊", [continuant, sonorant, palatal]),
+    Segment("ɥ̊", [continuant, sonorant, palatal, labialized]),
+    Segment("ʍ", [continuant, sonorant, velar, labialized]),
+    Segment("ʋ", [consonantal, continuant, sonorant, labiodental, voiced]),
+    Segment("ɹ", [consonantal, continuant, sonorant, postalveolar, voiced]),
+    Segment("ɻ", [consonantal, continuant, sonorant, retroflex, voiced]),
+    Segment("ɰ", [continuant, sonorant, velar, voiced]),
+    Segment("j", [continuant, sonorant, palatal, voiced]),
+    Segment("ɥ", [continuant, sonorant, palatal, labialized, voiced]),
+    Segment("w", [continuant, sonorant, velar, labialized, voiced]),
+    Segment("l̥", [consonantal, continuant, sonorant, alveolar, lateral]),
+    Segment("ɭ̊", [consonantal, continuant, sonorant, alveolar, lateral]),
+    Segment("ʎ̥", [consonantal, continuant, sonorant, alveolar, lateral]),
+    Segment("ʟ̥", [consonantal, continuant, sonorant, alveolar, lateral]),
+    Segment("l", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    Segment("ɭ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    Segment("ʎ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    Segment("ʟ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    Segment("ɪ", [syllabic, voiced, sonorant, continuant, high]),
+    Segment("ʊ", [syllabic, voiced, sonorant, continuant, high, back, labialized]),
+    Segment("ɛ", [syllabic, voiced, sonorant, continuant, mid_high]),
+    Segment("ɔ", [syllabic, voiced, sonorant, continuant, mid_high, back, labialized]),
+    Segment("ɐ", [syllabic, voiced, sonorant, continuant, low]),
+    Segment("i", [syllabic, voiced, sonorant, continuant, high, tense]),
+    Segment("u", [syllabic, voiced, sonorant, continuant, high, back, labialized, tense]),
+    Segment("e", [syllabic, voiced, sonorant, continuant, mid_high, tense]),
     Segment(
-        "o", [Syllabic, Voiced, Sonorant, Continuant, MidHigh, Back, Rounded, Tense]
+        "o", [syllabic, voiced, sonorant, continuant, mid_high, back, labialized, tense]
     ),
-    Segment("a", [Syllabic, Voiced, Sonorant, Continuant, Low, Tense]),
-    Segment("ə", [Syllabic, Voiced, Sonorant, Continuant]),
+    Segment("a", [syllabic, voiced, sonorant, continuant, low, tense]),
+    Segment("ə", [syllabic, voiced, sonorant, continuant]),
 ]
 
 
@@ -200,12 +210,24 @@ def ipa(*symbols: list[str]):
     for symbol in symbols:
         extra_features = []
         if "ʰ" in symbol:
-            extra_features.append(Aspirated)
+            extra_features.append(aspirated)
+        if "ʷ" in symbol:
+            extra_features.append(labialized)
 
         segment = next(filter(lambda s: s.ipa_symbol in symbol, SEGMENTS))
         new_segment = Segment(symbol, segment.features + extra_features)
         output.append(new_segment)
     return output
+
+def word(segments: list[Segment], *seg_filters: t.Callable[[list[Feature]], bool]):
+	output = []
+	
+	for segment in seg_filters:
+		stuff = list(filter(lambda x: segment(x.features), segments))
+		print(stuff)
+		output += [random.choice(stuff)]
+
+	return output
 
 
 @dataclass
