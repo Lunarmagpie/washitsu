@@ -37,15 +37,15 @@ Word(
     [
         syllable(
             segments,
-            [strident & (alveolar | glottal), -strident & -voiced & -aspirated, +trill],
-            [select("a") & nasal],
-            [+consonantal],
+            [select("g")],
+            [select("a")],
+            [select("p")],
         ),
         syllable(
             segments,
-            [consonantal],
-            [syllabic],
-            [consonantal],
+            [select("b")],
+            [select("u")],
+            [],
         ),
     ]
 ).show().then(each_segment(voicing_assim)).show()

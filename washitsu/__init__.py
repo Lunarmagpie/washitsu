@@ -108,8 +108,8 @@ class Segment:
     features: list[Feature]
 
     def __add__(self, other: Feature):
-        changed = copy.deepcopy(self)
-        changed.features += [other]
+        changed = copy.copy(self)
+        changed.features = copy.copy(self.features) + [other]
         return changed
 
     def __eq__(self, other):
@@ -373,9 +373,11 @@ class Word:
             return False
 
         before_part = syllables[index - len(before) : index]
-        after_part = syllables[index : index + len(before)]
+        after_part = syllables[index + 1: index + 1 + len(after)]
 
         def matches(parts, funcs):
+            if (len(funcs) == 0):
+                return True
             return builtins.all(b(a.features) for (a, b) in zip(parts, funcs))
 
         if not matches(before_part, before):
