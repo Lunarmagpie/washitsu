@@ -34,7 +34,7 @@ segments = ipa(
 
 pprint(
     syllable(
-        SEGMENTS,
+        segments,
         [bilabial],
         [low, high],
         [bilabial],
