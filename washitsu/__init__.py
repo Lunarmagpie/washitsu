@@ -8,25 +8,36 @@ import builtins
 
 
 def all(*argv):
-    return lambda x: builtins.all(arg.has(x) for arg in argv)
+    return HigherOrderFunction(lambda x: builtins.all(arg.has(x) for arg in argv))
 
 
 def any(*argv):
     return lambda x: builtins.any(arg.has(x) for arg in argv)
 
 
-@dataclass
-class Feature:
-    name: str
+def _(x):
+    return True
+
+
+class HigherOrderFunction:
+		def __init__(self, callable: t.Any) -> None:
+        pass
 
     def __call__(self, *args, **kwargs):
-        return self.has(*args, **kwargs)
+        return self.callable(*args, **kwargs)
 
     def __and__(self, other):
         return all(self, other)
 
     def __or__(self, other):
         return any(self, other)
+
+
+class Feature(HigherOrderFunction):
+    name: str
+
+    def __call__(self, *args, **kwargs):
+        return self.has(*args, **kwargs)
 
     def has(self, x: list[Feature]):
         return self in x
@@ -253,9 +264,19 @@ class Syllable:
     # supersegmentals: list[Feature]
 
 
+def _default_word_printer(segment: Segment) -> str:
+    return segment.ipa_symbol
+
+
 @dataclass
 class Word:
     syllables: list[Syllable]
+
+    def show(self, printer: t.Callable[[Segment], str] = _default_word_printer) -> None:
+        output = []
+        for syllable in self.syllables:
+            output += [*syllable.onset, *syllable.nucleus, *syllable.coda]
+        print("".join([printer(x) for x in output]))
 
     def then(self, sound_change: t.Callable[[Segment], Segment]) -> t.Self:
         pass
