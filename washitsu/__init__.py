@@ -8,7 +8,10 @@ def and_combinator(*argv):
     return lambda x: all(arg.has(x) for arg in argv)
 
 
+@dataclass
 class Feature:
+    name: str
+
     def __and__(self, other):
         return and_combinator(self, other)
 
@@ -17,43 +20,45 @@ class Feature:
 
 
 # Place
-Bilabial = Feature()
-Labiodental = Feature()
-Alveolar = Feature()
-PostAlveolar = Feature()
-Retroflex = Feature()
-Palatal = Feature()
-Velar = Feature()
-Uvular = Feature()
-Pharyngeal = Feature()
-Glottal = Feature()
+Bilabial = Feature("Bilabial")
+Labiodental = Feature("Labiodental")
+Alveolar = Feature("Alveolar")
+PostAlveolar = Feature("PostAlveolar")
+Retroflex = Feature("Retroflex")
+Palatal = Feature("Palatal")
+Velar = Feature("Velar")
+Uvular = Feature("Uvular")
+Pharyngeal = Feature("Pharyngeal")
+Glottal = Feature("Glottal")
 # Articulation
-Consonantal = Feature()
-Stop = Feature()
-Trill = Feature()
-Tap = Feature()
-Strident = Feature()
-Sibilant = Feature()
-Lateral = Feature()
-Voiced = Feature()
-Aspirated = Feature()
-Sonorant = Feature()
-Continuant = Feature()
-Nasal = Feature()
-DelayedRelease = Feature()
+Consonantal = Feature("Consonantal")
+Stop = Feature("Stop")
+Trill = Feature("Trill")
+Tap = Feature("Tap")
+Strident = Feature("Strident")
+Sibilant = Feature("Sibilant")
+Lateral = Feature("Lateral")
+Voiced = Feature("Voiced")
+Aspirated = Feature("Aspirated")
+Sonorant = Feature("Sonorant")
+Continuant = Feature("Continuant")
+Nasal = Feature("Nasal")
+DelayedRelease = Feature("DelayedRelease")
 # Vowels
-Syllabic = Feature()
-High = Feature()
-MidHigh = Feature()
-Low = Feature()
-Back = Feature()
-Tense = Feature()
-Rounded = Feature()
+Syllabic = Feature("Syllabic")
+High = Feature("High")
+MidHigh = Feature("MidHigh")
+Low = Feature("Low")
+Back = Feature("Back")
+Tense = Feature("Tense")
+Rounded = Feature("Rounded")
+
 
 @dataclass
 class Segment:
     ipa_symbol: str
     features: list[Feature]
+
 
 SEGMENTS = [
     Segment("p", [Consonantal, Bilabial, Stop]),
@@ -188,6 +193,20 @@ SEGMENTS = [
     Segment("a", [Syllabic, Voiced, Sonorant, Continuant, Low, Tense]),
     Segment("ə", [Syllabic, Voiced, Sonorant, Continuant]),
 ]
+
+
+def ipa(*symbols: list[str]):
+    output = []
+    for symbol in symbols:
+        extra_features = []
+        if "ʰ" in symbol:
+            extra_features.append(Aspirated)
+
+        segment = next(filter(lambda s: s.ipa_symbol in symbol, SEGMENTS))
+        new_segment = Segment(symbol, segment.features + extra_features)
+        output.append(new_segment)
+    return output
+
 
 @dataclass
 class Syllable:
