@@ -452,15 +452,15 @@ class Word:
         return segments
 
     @t.overload
-    def matches(self, before, segment: Segment, after) -> bool:
+    def matches(self, before: list, segment: Segment, after: list) -> bool:
         ...
 
     @t.overload
-    def matches(self, before, segment: Segment) -> bool:
+    def matches(self, before: list, segment: Segment) -> bool:
         ...
 
     @t.overload
-    def matches(self, segment: Segment, after) -> bool:
+    def matches(self, segment: Segment, after: list) -> bool:
         ...
     @t.overload
     def matches(self, segment: Segment) -> bool:
