@@ -212,8 +212,7 @@ SEGMENTS = [
     Segment("ʙ", [consonantal, bilabial, sonorant, continuant, trill, voiced]),
     Segment("r", [consonantal, alveolar, sonorant, continuant, trill, voiced]),
     Segment("ʀ", [consonantal, uvular, sonorant, continuant, trill, voiced]),
-    Segment("ⱱ", [consonantal, labiodental,
-            sonorant, continuant, tap, voiced]),
+    Segment("ⱱ", [consonantal, labiodental, sonorant, continuant, tap, voiced]),
     Segment("ɾ", [consonantal, alveolar, sonorant, tap, voiced]),
     Segment("ɽ", [consonantal, retroflex, sonorant, tap, voiced]),
     Segment("ɸ", [consonantal, continuant, bilabial, strident]),
@@ -223,11 +222,9 @@ SEGMENTS = [
     Segment("θ", [consonantal, continuant, alveolar, strident]),
     Segment("ð", [consonantal, continuant, alveolar, strident, voiced]),
     Segment("s", [consonantal, continuant, alveolar, strident, sibilant]),
-    Segment("z", [consonantal, continuant,
-            alveolar, strident, sibilant, voiced]),
+    Segment("z", [consonantal, continuant, alveolar, strident, sibilant, voiced]),
     Segment("ɬ", [consonantal, continuant, alveolar, strident, lateral]),
-    Segment("ɮ", [consonantal, continuant,
-            alveolar, strident, lateral, voiced]),
+    Segment("ɮ", [consonantal, continuant, alveolar, strident, lateral, voiced]),
     Segment("ʃ", [consonantal, continuant, postalveolar, strident, sibilant]),
     Segment(
         "ʒ",
@@ -274,14 +271,10 @@ SEGMENTS = [
     Segment("ɭ̊", [consonantal, continuant, sonorant, alveolar, lateral]),
     Segment("ʎ̥", [consonantal, continuant, sonorant, alveolar, lateral]),
     Segment("ʟ̥", [consonantal, continuant, sonorant, alveolar, lateral]),
-    Segment("l", [consonantal, continuant,
-            sonorant, alveolar, lateral, voiced]),
-    Segment("ɭ", [consonantal, continuant,
-            sonorant, alveolar, lateral, voiced]),
-    Segment("ʎ", [consonantal, continuant,
-            sonorant, alveolar, lateral, voiced]),
-    Segment("ʟ", [consonantal, continuant,
-            sonorant, alveolar, lateral, voiced]),
+    Segment("l", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    Segment("ɭ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    Segment("ʎ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    Segment("ʟ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
     Segment("i", [syllabic, voiced, sonorant, front, close]),
     Segment("y", [syllabic, voiced, sonorant, front, labialized, close]),
     Segment("ɨ", [syllabic, voiced, sonorant, central, close]),
@@ -314,7 +307,7 @@ SEGMENTS = [
     Segment("ɶ", [syllabic, voiced, sonorant, front, labialized, open]),
     Segment("ä", [syllabic, voiced, sonorant, central, open]),
     Segment("ɑ", [syllabic, voiced, sonorant, back, open]),
-    Segment("ɒ", [syllabic, voiced, sonorant, back, labialized, open])
+    Segment("ɒ", [syllabic, voiced, sonorant, back, labialized, open]),
 ]
 
 DIACRITICS = [
@@ -353,8 +346,7 @@ def syllable(
         outputoutput = []
 
         for segmentsegment in segment:
-            stuff = list(
-                filter(lambda x: segmentsegment(x.features), segments))
+            stuff = list(filter(lambda x: segmentsegment(x.features), segments))
             outputoutput += [random.choice(stuff)]
 
         output += [outputoutput]
@@ -381,11 +373,11 @@ class Syllable:
 def _default_word_printer(segment: Segment) -> str:
     subset_amounts = []
     for big_seg in SEGMENTS:
-        subset_amounts += [(big_seg,
-                            subset_amount(segment.features, big_seg.features))]
+        subset_amounts += [(big_seg, subset_amount(segment.features, big_seg.features))]
 
     subset_amounts: list[tuple[Segment, int]] = sorted(
-        subset_amounts, key=lambda x: x[1])
+        subset_amounts, key=lambda x: x[1]
+    )
 
     chosen_seg = subset_amounts[0][0]
     leftover_features = copy.copy(segment.features)
@@ -397,11 +389,11 @@ def _default_word_printer(segment: Segment) -> str:
 
     for feature in leftover_features:
         try:
-            diacritics += next(filter(lambda x: x.features ==
-                                      [feature], DIACRITICS)).ipa_symbol
+            diacritics += next(
+                filter(lambda x: x.features == [feature], DIACRITICS)
+            ).ipa_symbol
         except:
-            raise Exception(
-                f"Can not find matching segment: {segment.features}")
+            raise Exception(f"Can not find matching segment: {segment.features}")
 
     return subset_amounts[0][0].ipa_symbol + diacritics
 
@@ -417,9 +409,19 @@ def each_segment(f: t.Callable[[Word], Segment | list[Segment]]):
                 return [x]
 
         for syllable in word.syllables:
-            onset = list(itertools.chain(*map(to_list, map(lambda s: f(word, s), syllable.onset))))
-            nucleus = list(itertools.chain(*map(to_list, map(lambda s: f(word, s), syllable.nucleus))))
-            coda = list(itertools.chain(*map(to_list, map(lambda s: f(word, s), syllable.coda))))
+            onset = list(
+                itertools.chain(
+                    *map(to_list, map(lambda s: f(word, s), syllable.onset))
+                )
+            )
+            nucleus = list(
+                itertools.chain(
+                    *map(to_list, map(lambda s: f(word, s), syllable.nucleus))
+                )
+            )
+            coda = list(
+                itertools.chain(*map(to_list, map(lambda s: f(word, s), syllable.coda)))
+            )
 
             syllables.append(Syllable(onset, nucleus, coda))
 
@@ -457,8 +459,8 @@ class Word:
         if (index + len(after)) >= len(syllables):
             return False
 
-        before_part = syllables[index - len(before): index]
-        after_part = syllables[index + 1: index + 1 + len(after)]
+        before_part = syllables[index - len(before) : index]
+        after_part = syllables[index + 1 : index + 1 + len(after)]
 
         def matches(parts, funcs):
             if len(funcs) == 0:
@@ -479,8 +481,7 @@ class Word:
 
 def select(symbol: str) -> Feature:
     features = ipa(symbol)[0].features
-    full_features = list(itertools.chain.from_iterable(
-        [s.features for s in SEGMENTS]))
+    full_features = list(itertools.chain.from_iterable([s.features for s in SEGMENTS]))
     all_features: list[Feature] = []
     [all_features.append(x) for x in full_features if x not in all_features]
 
