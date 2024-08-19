@@ -4,10 +4,19 @@ import copy
 from dataclasses import dataclass
 import random
 import typing as t
+from pprint import pprint
 
 
 def lists_are_equal(a, b):
     return all(x in b for x in a) and all(x in a for x in b)
+
+
+def subset_amount(a, b):
+    amount = 0
+    for item in a:
+        if item in b:
+            amount += 1
+    return len(a) - amount
 
 
 class HigherOrderFunction:
@@ -41,8 +50,10 @@ def all_combinator(*argv):
 def any_combinator(*argv):
     return HigherOrderFunction(lambda x: any(arg(x) for arg in argv))
 
+
 def xor(left, right):
     return HigherOrderFunction(lambda x: left(x) ^ right(x))
+
 
 def not_combinator(func):
     return HigherOrderFunction(lambda x: not func(x))
@@ -289,7 +300,7 @@ def ipa(*symbols: list[str]) -> list[Segment]:
         extra_features = []
         for diacritic in DIACRITICS:
             if diacritic.ipa_symbol in symbol:
-                extra_features.append(diacritic.features)
+                extra_features += diacritic.features
 
         segment = next(filter(lambda s: s.ipa_symbol in symbol, SEGMENTS))
         new_segment = Segment(symbol, segment.features + extra_features)
@@ -334,9 +345,22 @@ class Syllable:
 
 
 def _default_word_printer(segment: Segment) -> str:
+    subset_amounts = []
     for big_seg in SEGMENTS:
-        if lists_are_equal(segment.features, big_seg.features):
-            return big_seg.ipa_symbol
+        subset_amounts += [(big_seg, subset_amount(segment.features, big_seg.features))]
+
+    subset_amounts: list[tuple[Segment, int]] = sorted(subset_amounts, key=lambda x: x[1])
+
+    chosen_seg = subset_amounts[0][0]
+    old_features = copy.copy(segment).features
+    for feature in chosen_seg.features:
+        if feature in old_features:
+            old_features.remove(feature)
+
+    print(old_features)
+
+    return subset_amounts[0][0].ipa_symbol
+
     raise Exception(f"Can not find matching segment: {segment.features}")
 
 
