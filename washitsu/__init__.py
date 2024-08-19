@@ -406,14 +406,20 @@ def _default_word_printer(segment: Segment) -> str:
     return subset_amounts[0][0].ipa_symbol + diacritics
 
 
-def each_segment(f):
+def each_segment(f: t.Callable[[Word], Segment | list[Segment]]):
     def out(word):
         syllables = []
 
+        def to_list(x):
+            if isinstance(x, list):
+                return x
+            else:
+                return [x]
+
         for syllable in word.syllables:
-            onset = list(map(lambda s: f(word, s), syllable.onset))
-            nucleus = list(map(lambda s: f(word, s), syllable.nucleus))
-            coda = list(map(lambda s: f(word, s), syllable.coda))
+            onset = list(itertools.chain(*map(to_list, map(lambda s: f(word, s), syllable.onset))))
+            nucleus = list(itertools.chain(*map(to_list, map(lambda s: f(word, s), syllable.nucleus))))
+            coda = list(itertools.chain(*map(to_list, map(lambda s: f(word, s), syllable.coda))))
 
             syllables.append(Syllable(onset, nucleus, coda))
 
