@@ -7,21 +7,9 @@ import random
 import builtins
 
 
-def all(*argv):
-    return HigherOrderFunction(lambda x: builtins.all(arg.has(x) for arg in argv))
-
-
-def any(*argv):
-    return lambda x: builtins.any(arg.has(x) for arg in argv)
-
-
-def _(x):
-    return True
-
-
 class HigherOrderFunction:
-		def __init__(self, callable: t.Any) -> None:
-        pass
+    def __init__(self, callable: t.Any) -> None:
+        self.callable = callable
 
     def __call__(self, *args, **kwargs):
         return self.callable(*args, **kwargs)
@@ -32,12 +20,32 @@ class HigherOrderFunction:
     def __or__(self, other):
         return any(self, other)
 
+    def __neg__(self):
+        return not_combinator(self)
+
+    def __pos__(self):
+        return self
+
+
+def all(*argv):
+    return HigherOrderFunction(lambda x: builtins.all(arg(x) for arg in argv))
+
+
+def any(*argv):
+    return HigherOrderFunction(lambda x: builtins.any(arg(x) for arg in argv))
+
+
+def not_combinator(func):
+    return HigherOrderFunction(lambda x: not func(x))
+
+
+_ = HigherOrderFunction(lambda _: True)
+
 
 class Feature(HigherOrderFunction):
-    name: str
-
-    def __call__(self, *args, **kwargs):
-        return self.has(*args, **kwargs)
+    def __init__(self, name: str):
+        super().__init__(self.has)
+        self.name = name
 
     def has(self, x: list[Feature]):
         return self in x

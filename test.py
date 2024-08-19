@@ -37,9 +37,9 @@ Word(
     [
         syllable(
             segments,
-            [not syllabic],
-            [syllabic],
-            [consonantal],
+            [strident & (alveolar | glottal), -strident & -voiced & -aspirated, +trill],
+            [+syllabic],
+            [+consonantal],
         ),
         syllable(
             segments,
