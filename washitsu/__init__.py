@@ -27,7 +27,6 @@ __all__ = [
     "uvular",
     "pharyngeal",
     "glottal",
-    # Articulation
     "consonantal",
     "stop",
     "trill",
@@ -41,7 +40,6 @@ __all__ = [
     "continuant",
     "nasal",
     "delayed_release",
-    # Vowels
     "syllabic",
     "front",
     "central",
@@ -53,7 +51,6 @@ __all__ = [
     "open_mid",
     "near_open",
     "open",
-    # Diacritic
     "labialized",
     "palatalized",
     "velarized",
