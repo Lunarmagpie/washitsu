@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import typing as t
 import random
-
+import copy
 import builtins
 
 
@@ -51,6 +51,12 @@ class Feature(HigherOrderFunction):
         super().__init__(self.has)
         self.name = name
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
     def has(self, x: list[Feature]):
         return self in x
 
@@ -94,6 +100,12 @@ labialized = Feature("Labialized")
 class Segment:
     ipa_symbol: str
     features: list[Feature]
+
+    def __add__(self, other: Feature):
+        changed = copy.deepcopy(self)
+        changed.features += [other]
+        return changed
+
 
     def __eq__(self, other):
         return (

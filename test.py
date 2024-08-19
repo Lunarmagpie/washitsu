@@ -34,11 +34,15 @@ segments = ipa(
 )
 
 
-def voicing_assim(word: Word, segment: Segment):
+def voicing_assim(word: Word, segment: Segment) -> Segment:
     if word.surrounds([], segment, [voiced & consonantal]):
-        pass
+        return segment + voiced
+    return segment
 
 
+
+def show(a):
+    return str(a.features)
 
 Word(
     [
@@ -55,4 +59,4 @@ Word(
             [consonantal],
         ),
     ]
-).show().then(each_segment(voicing_assim))
+).show(show).then(each_segment(voicing_assim)).show(show)
