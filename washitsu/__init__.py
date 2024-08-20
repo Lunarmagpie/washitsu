@@ -662,7 +662,7 @@ class Word:
     def then(self, sound_change: t.Callable[[Word], Word]) -> t.Self:
         return sound_change(self)
 
-    def find(self, search: Feature, list: list[Feature]) -> bool:
+    def _includes(self, search: Feature, list: list[Feature]) -> bool:
         """
         Find if a Feature exists in a list of Features.
         """
@@ -677,7 +677,7 @@ class Word:
         Find if a segment with the features given exists within a word.
         """
         flattenedSegments = self.flatten()
-        return self.find(includes, flattenedSegments)
+        return self._includes(includes, flattenedSegments)
 
     def includes_before(self, segment: Segment, includes: Feature) -> bool:
         """
@@ -685,7 +685,7 @@ class Word:
         """
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
-        return self.find(includes, flattenedSegments[index:])
+        return self._includes(includes, flattenedSegments[index:])
 
     def includes_after(self, segment: Segment, includes: Feature) -> bool:
         """
@@ -693,7 +693,7 @@ class Word:
         """
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
-        return self.find(includes, flattenedSegments[:index])
+        return self._includes(includes, flattenedSegments[:index])
 
 
 def merge(features: list[Feature]) -> Feature:
