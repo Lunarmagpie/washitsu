@@ -34,20 +34,19 @@ segments = ipa(
     "ə",
 )
 
-for i in range(0, 10):
-    word_length = random.randint(1, 3)
-    (
-        Word(
-            [a(segments,
-                random.choice([[
-                    strident & (alveolar | glottal),
-                    -strident & -voiced & -aspirated,
-                    probability(+trill | +lateral, 0.4),
-                ], [probability(-syllabic, 0.8)]]),
-                [syllabic],
-                [probability(-syllabic, 0.5), probability(-syllabic & -sonorant, 0.5)],
-            ) for a in [syllable] * word_length]
-        )
-        .then(each_segment(voicing_assim))
-        .show()
+(
+    Word(
+        [
+            syllable(segments,
+                    [select("m")],
+                    [select("u")],
+                    [select("s")]
+            ),
+        ]
     )
+    .show()
+    .then(each_segment(umlaut))
+    .show()
+    .then(each_segment(great_vowel_shift))
+    .show()
+)

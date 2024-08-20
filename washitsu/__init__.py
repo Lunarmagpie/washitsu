@@ -55,6 +55,7 @@ __all__ = [
     "palatalized",
     "velarized",
     "pharyngealized",
+    "long",
 ]
 
 
@@ -176,7 +177,7 @@ labialized = Feature("Labialized")
 palatalized = Feature("Palatalized")
 velarized = Feature("Velarized")
 pharyngealized = Feature("Pharyngealized")
-
+long = Feature("long")
 
 @dataclass
 class Segment:
@@ -185,6 +186,8 @@ class Segment:
 
     def __add__(self, other: Feature):
         changed = copy.copy(self)
+        if other in self.features:
+            return
         changed.features = copy.copy(self.features) + [other]
         return changed
 
@@ -326,6 +329,73 @@ SEGMENTS = [
     Segment("ɭ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
     Segment("ʎ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
     Segment("ʟ", [consonantal, continuant, sonorant, alveolar, lateral, voiced]),
+    # Vowels
+    Segment("i̥", [syllabic, sonorant, front, close]),
+    Segment("y̥", [syllabic, sonorant, front, labialized, close]),
+    Segment("ɨ̥", [syllabic, sonorant, central, close]),
+    Segment("ʉ̥", [syllabic, sonorant, central, labialized, close]),
+    Segment("ɯ̥", [syllabic, sonorant, back, close]),
+    Segment("u̥", [syllabic, sonorant, back, labialized, close]),
+    Segment("ɪ̥", [syllabic, sonorant, front, near_close]),
+    Segment("ʏ̥", [syllabic, sonorant, front, labialized, near_close]),
+    Segment("ʊ̥", [syllabic, sonorant, back, labialized, near_close]),
+    Segment("e̥", [syllabic, sonorant, front, close_mid]),
+    Segment("ø̥", [syllabic, sonorant, front, labialized, close_mid]),
+    Segment("ɘ̥", [syllabic, sonorant, central, close_mid]),
+    Segment("ɵ̥", [syllabic, sonorant, central, labialized, close_mid]),
+    Segment("ɤ̥", [syllabic, sonorant, back, close_mid]),
+    Segment("o̥", [syllabic, sonorant, back, labialized, close_mid]),
+    Segment("e̞̥", [syllabic, sonorant, front, mid]),
+    Segment("ø̞̥", [syllabic, sonorant, front, labialized, mid]),
+    Segment("ə̥", [syllabic, sonorant, central, mid]),
+    Segment("ɤ̞̥", [syllabic, sonorant, back, mid]),
+    Segment("o̞̥", [syllabic, sonorant, back, labialized, mid]),
+    Segment("ɛ̥", [syllabic, sonorant, front, open_mid]),
+    Segment("œ̥", [syllabic, sonorant, front, labialized, open_mid]),
+    Segment("ɜ̥", [syllabic, sonorant, central, open_mid]),
+    Segment("ɞ̥", [syllabic, sonorant, central, labialized, open_mid]),
+    Segment("ʌ̥", [syllabic, sonorant, back, open_mid]),
+    Segment("ɔ̥", [syllabic, sonorant, back, labialized, open_mid]),
+    Segment("æ̥", [syllabic, sonorant, front, near_open]),
+    Segment("ɐ̥", [syllabic, sonorant, central, near_open]),
+    Segment("ḁ", [syllabic, sonorant, front, open]),
+    Segment("ɶ̥", [syllabic, sonorant, front, labialized, open]),
+    Segment("ḁ̈", [syllabic, sonorant, central, open]),
+    Segment("ɑ̥", [syllabic, sonorant, back, open]),
+    Segment("ɒ̥", [syllabic, sonorant, back, labialized, open]),
+    Segment("y̥̑", [sonorant, front, labialized, close]),
+    Segment("ɨ̯̥", [sonorant, central, close]),
+    Segment("ʉ̯̥", [sonorant, central, labialized, close]),
+    Segment("ɯ̯̥", [sonorant, back, close]),
+    Segment("u̯̥", [sonorant, back, labialized, close]),
+    Segment("ɪ̯̥", [sonorant, front, near_close]),
+    Segment("ʏ̯̥", [sonorant, front, labialized, near_close]),
+    Segment("ʊ̯̥", [sonorant, back, labialized, near_close]),
+    Segment("e̯̥", [sonorant, front, close_mid]),
+    Segment("ø̯̥", [sonorant, front, labialized, close_mid]),
+    Segment("ɘ̯̥", [sonorant, central, close_mid]),
+    Segment("ɵ̯̥", [sonorant, central, labialized, close_mid]),
+    Segment("ɤ̯̥", [sonorant, back, close_mid]),
+    Segment("o̯̥", [sonorant, back, labialized, close_mid]),
+    Segment("i̯̥", [sonorant, front, close]),
+    Segment("ȇ̞̥", [sonorant, front, mid]),
+    Segment("ø̞̥̑", [sonorant, front, labialized, mid]),
+    Segment("ə̯̥", [sonorant, central, mid]),
+    Segment("ɤ̞̥̑", [sonorant, back, mid]),
+    Segment("ȏ̞̥", [sonorant, back, labialized, mid]),
+    Segment("ɛ̯̥", [sonorant, front, open_mid]),
+    Segment("œ̯̥", [sonorant, front, labialized, open_mid]),
+    Segment("ɜ̯̥", [sonorant, central, open_mid]),
+    Segment("ɞ̯̥", [sonorant, central, labialized, open_mid]),
+    Segment("ʌ̯̥", [sonorant, back, open_mid]),
+    Segment("ɔ̯̥", [sonorant, back, labialized, open_mid]),
+    Segment("æ̯̥", [sonorant, front, near_open]),
+    Segment("ɐ̯̥", [sonorant, central, near_open]),
+    Segment("a̯̥", [sonorant, front, open]),
+    Segment("ɶ̯̥", [sonorant, front, labialized, open]),
+    Segment("ä̯̥", [sonorant, central, open]),
+    Segment("ɑ̯̥", [sonorant, back, open]),
+    Segment("ɒ̯̥", [sonorant, back, labialized, open]),
     Segment("i", [syllabic, voiced, sonorant, front, close]),
     Segment("y", [syllabic, voiced, sonorant, front, labialized, close]),
     Segment("ɨ", [syllabic, voiced, sonorant, central, close]),
@@ -359,6 +429,39 @@ SEGMENTS = [
     Segment("ä", [syllabic, voiced, sonorant, central, open]),
     Segment("ɑ", [syllabic, voiced, sonorant, back, open]),
     Segment("ɒ", [syllabic, voiced, sonorant, back, labialized, open]),
+    Segment("i̯", [voiced, sonorant, front, close]),
+    Segment("y̑", [voiced, sonorant, front, labialized, close]),
+    Segment("ɨ̯", [voiced, sonorant, central, close]),
+    Segment("ʉ̯", [voiced, sonorant, central, labialized, close]),
+    Segment("ɯ̯", [voiced, sonorant, back, close]),
+    Segment("u̯", [voiced, sonorant, back, labialized, close]),
+    Segment("ɪ̯", [voiced, sonorant, front, near_close]),
+    Segment("ʏ̯", [voiced, sonorant, front, labialized, near_close]),
+    Segment("ʊ̯", [voiced, sonorant, back, labialized, near_close]),
+    Segment("e̯", [voiced, sonorant, front, close_mid]),
+    Segment("ø̯", [voiced, sonorant, front, labialized, close_mid]),
+    Segment("ɘ̯", [voiced, sonorant, central, close_mid]),
+    Segment("ɵ̯", [voiced, sonorant, central, labialized, close_mid]),
+    Segment("ɤ̯", [voiced, sonorant, back, close_mid]),
+    Segment("o̯", [voiced, sonorant, back, labialized, close_mid]),
+    Segment("ȇ̞", [voiced, sonorant, front, mid]),
+    Segment("ø̞̑", [voiced, sonorant, front, labialized, mid]),
+    Segment("ə̯", [voiced, sonorant, central, mid]),
+    Segment("ɤ̞̑", [voiced, sonorant, back, mid]),
+    Segment("ȏ̞", [voiced, sonorant, back, labialized, mid]),
+    Segment("ɛ̯", [voiced, sonorant, front, open_mid]),
+    Segment("œ̯", [voiced, sonorant, front, labialized, open_mid]),
+    Segment("ɜ̯", [voiced, sonorant, central, open_mid]),
+    Segment("ɞ̯", [voiced, sonorant, central, labialized, open_mid]),
+    Segment("ʌ̯", [voiced, sonorant, back, open_mid]),
+    Segment("ɔ̯", [voiced, sonorant, back, labialized, open_mid]),
+    Segment("æ̯", [voiced, sonorant, front, near_open]),
+    Segment("ɐ̯", [voiced, sonorant, central, near_open]),
+    Segment("a̯", [voiced, sonorant, front, open]),
+    Segment("ɶ̯", [voiced, sonorant, front, labialized, open]),
+    Segment("ä̯", [voiced, sonorant, central, open]),
+    Segment("ɑ̯", [voiced, sonorant, back, open]),
+    Segment("ɒ̯", [voiced, sonorant, back, labialized, open]),
 ]
 
 DIACRITICS = [
@@ -368,6 +471,7 @@ DIACRITICS = [
     Segment("ʲ", [palatalized]),
     Segment("ʰ", [aspirated]),
     Segment("̃", [nasal]),
+    Segment("ː", [long]),
 ]
 
 
@@ -494,7 +598,7 @@ class Word:
         print("".join([printer(x) for x in output]))
         return self
 
-    def flatten(self):
+    def flatten(self) -> list[Segment]:
         segments = []
 
         for syllable in self.syllables:
@@ -503,29 +607,25 @@ class Word:
         return segments
 
     @t.overload
-    def matches(self, before: list, segment: Segment, after: list) -> bool:
-        ...
+    def matches(self, before: list, segment: Segment, after: list) -> bool: ...
 
     @t.overload
-    def matches(self, before: list, segment: Segment) -> bool:
-        ...
+    def matches(self, before: list, segment: Segment) -> bool: ...
 
     @t.overload
-    def matches(self, segment: Segment, after: list) -> bool:
-        ...
+    def matches(self, segment: Segment, after: list) -> bool: ...
 
     @t.overload
-    def matches(self, segment: Segment) -> bool:
-        ...
+    def matches(self, segment: Segment) -> bool: ...
 
     def matches(self, *args):
         if len(args) == 3:
             return self._matches(args[0], args[1], args[2])
 
-        if len(args) == 2 and isinstance(args[0], Syllable):
+        if len(args) == 2 and isinstance(args[0], Segment):
             return self._matches([], args[0], args[1])
 
-        if len(args) == 2 and isinstance(args[1], Syllable):
+        if len(args) == 2 and isinstance(args[1], Segment):
             return self._matches(args[0], args[1], [])
 
         if len(args) == 1:
@@ -561,6 +661,47 @@ class Word:
 
     def then(self, sound_change: t.Callable[[Word], Word]) -> t.Self:
         return sound_change(self)
+
+    def find(self, search: Feature, list: list[Feature]) -> bool:
+        """
+        Find if a Feature exists in a list of Features.
+        """
+        for segment in list:
+            result = search(segment.features)
+            if result == True:
+                return True
+        return False
+
+    def includes(self, includes: Feature) -> bool:
+        """
+        Find if a segment with the features given exists within a word.
+        """
+        flattenedSegments = self.flatten()
+        return self.find(includes, flattenedSegments)
+
+    def includes_before(self, segment: Segment, includes: Feature) -> bool:
+        """
+        Find if a segment with the features given exists within a word, before another segment.
+        """
+        flattenedSegments = self.flatten()
+        index = flattenedSegments.index(segment)
+        return self.find(includes, flattenedSegments[index:])
+
+    def includes_after(self, segment: Segment, includes: Feature) -> bool:
+        """
+        Find if a segment with the features given exists within a word, after another segment.
+        """
+        flattenedSegments = self.flatten()
+        index = flattenedSegments.index(segment)
+        return self.find(includes, flattenedSegments[:index])
+
+
+def merge(features: list[Feature]) -> Feature:
+    output = features[0]
+    for i in range(0, len(features) - 1):
+        next_feature = features[i + 1]
+        output = output & next_feature
+    return output
 
 
 def select(symbol: str) -> Feature:

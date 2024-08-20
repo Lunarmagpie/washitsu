@@ -3,7 +3,6 @@ from washitsu import *
 
 obstruent = -sonorant
 
-
 def voicing_assim(word: Word, segment: Segment) -> Segment:
     if word.matches(segment, [voiced & consonantal & obstruent]) and segment.has(
         consonantal & obstruent
@@ -41,4 +40,18 @@ def gnarsh_chain_shift(word: Word, segment: Segment) -> Segment:
         return segment - close_mid + open
     if segment.has(select("a")):
         return segment - open + close_mid
+    return segment
+
+
+def umlaut(word: Word, segment: Segment) -> Segment:
+    if word.includes_before(segment, close & front) and segment.has(back):
+        return segment - back + front
+    return segment
+
+
+def great_vowel_shift(word: Word, segment: Segment) -> Segment:
+    if segment.has(close):
+        return [find("a"), segment - syllabic]
+    if segment.has(close_mid):
+        return segment - close_mid + close
     return segment

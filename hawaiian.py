@@ -23,11 +23,15 @@ for i in range(0, 10):
     word_length = random.randint(1, 5)
     (
         Word(
-            [a(segments,
-                [probability(-syllabic, 0.8)],
-                [+syllabic],
-                [],
-               ) for a in [syllable] * word_length]
+            [
+                a(
+                    segments,
+                    [probability(-syllabic, 0.8)],
+                    [+syllabic],
+                    [],
+                )
+                for a in [syllable] * word_length
+            ]
         )
         .show()
     )
