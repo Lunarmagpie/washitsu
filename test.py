@@ -45,8 +45,8 @@ segments = ipa(
         ]
     )
     .show()
-    .then(each_segment(umlaut))
+    .then(umlaut)
     .show()
-    .then(each_segment(great_vowel_shift))
+    .then(great_vowel_shift)
     .show()
 )
