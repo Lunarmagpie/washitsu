@@ -3,6 +3,7 @@ from washitsu import *
 
 obstruent = -sonorant
 
+
 @each_segment
 def voicing_assim(word: Word, segment: Segment) -> Segment:
     if word.matches(segment, [voiced & consonantal & obstruent]) and segment.has(

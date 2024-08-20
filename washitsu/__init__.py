@@ -1,9 +1,10 @@
 from __future__ import annotations
-import itertools
 import copy
 from dataclasses import dataclass
 import random
 import typing as t
+import inspect
+import itertools
 from pprint import pprint
 
 __all__ = [
@@ -59,8 +60,28 @@ __all__ = [
 ]
 
 
+class WaishitsuError(Exception):
+    pass
+
+
 def lists_are_equal(a, b):
     return all(x in b for x in a) and all(x in a for x in b)
+
+
+def _ensure_is_type(a, type, arg_name: str):
+    if isinstance(a, type):
+        return
+    raise WaishitsuError(f"Expected `{arg_name}` to be {type.__name__}, found `{a}`.")
+
+
+def _ensure_list_is_type(a, type, arg_name: str):
+    if isinstance(a, list):
+        return
+    for x in a:
+        if not isinstance(a, type):
+            raise WaishitsuError(
+                f"Expected `{arg_name}` to be list[{type.__name__}], found `{a}`."
+            )
 
 
 def subset_amount(a, b):
@@ -75,7 +96,7 @@ def subset_amount(a, b):
 
 
 class HigherOrderFunction:
-    def __init__(self, callable: t.Any) -> None:
+    def __init__(self, callable: t.Any):
         self.callable = callable
         self.name = callable.__name__
 
@@ -178,6 +199,7 @@ palatalized = Feature("Palatalized")
 velarized = Feature("Velarized")
 pharyngealized = Feature("Pharyngealized")
 long = Feature("long")
+
 
 @dataclass
 class Segment:
@@ -495,6 +517,8 @@ def syllable(
     nucleus: list[t.Callable[[list[Feature]], bool] | None],
     coda: list[t.Callable[[list[Feature]], bool] | None],
 ):
+    _ensure_list_is_type(segments, Segment, "segments")
+
     output = []
 
     for segment in [onset, nucleus, coda]:
@@ -550,7 +574,9 @@ def _default_word_printer(segment: Segment) -> str:
                 filter(lambda x: x.features == [feature], DIACRITICS)
             ).ipa_symbol
         except:
-            raise Exception(f"Can not find matching segment: {segment.features}")
+            raise WaishitsuError(
+                f"Failed to print word because waishitsu could not find an IPA symbol matching the feature set: {segment.features}"
+            )
 
     return subset_amounts[0][0].ipa_symbol + diacritics
 
@@ -560,6 +586,10 @@ def each_segment(f: t.Callable[[Word], Segment | list[Segment]]):
         syllables = []
 
         def to_list(x):
+            if x is None:
+                raise WaishitsuError(
+                    "Expected a segment or a list of segments, found `None`"
+                )
             if isinstance(x, list):
                 return x
             else:
@@ -607,28 +637,36 @@ class Word:
         return segments
 
     @t.overload
-    def matches(self, before: list, segment: Segment, after: list) -> bool: ...
+    def matches(self, before: list, segment: Segment, after: list) -> bool:
+        ...
 
     @t.overload
-    def matches(self, before: list, segment: Segment) -> bool: ...
+    def matches(self, before: list, segment: Segment) -> bool:
+        ...
 
     @t.overload
-    def matches(self, segment: Segment, after: list) -> bool: ...
+    def matches(self, segment: Segment, after: list) -> bool:
+        ...
 
     @t.overload
-    def matches(self, segment: Segment) -> bool: ...
+    def matches(self, segment: Segment) -> bool:
+        ...
 
     def matches(self, *args):
         if len(args) == 3:
+            _ensure_is_type(args[1], Segment, 'segment')
             return self._matches(args[0], args[1], args[2])
 
         if len(args) == 2 and isinstance(args[0], Segment):
+            _ensure_is_type(args[0], Segment, 'segment')
             return self._matches([], args[0], args[1])
 
         if len(args) == 2 and isinstance(args[1], Segment):
+            _ensure_is_type(args[1], Segment, 'segment')
             return self._matches(args[0], args[1], [])
 
         if len(args) == 1:
+            _ensure_is_type(args[0], Segment, 'segment')
             return self._matches([], args[0], [])
 
         raise Exception("Unknown overload")

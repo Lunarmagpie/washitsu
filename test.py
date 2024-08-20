@@ -37,11 +37,7 @@ segments = ipa(
 (
     Word(
         [
-            syllable(segments,
-                    [select("m")],
-                    [select("u")],
-                    [select("s")]
-            ),
+            syllable(segments, [select("m")], [select("u")], [select("s")]),
         ]
     )
     .show()
