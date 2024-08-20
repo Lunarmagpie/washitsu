@@ -717,22 +717,22 @@ class Word:
         flattenedSegments = self.flatten()
         return self._includes(includes, flattenedSegments)
 
-    def includes_before(self, segment: Segment, includes: Feature) -> bool:
+    def includes_before(self, segment: Segment, includes: HigherOrderFunction) -> bool:
         """
         Find if a segment with the features given exists within a word, before another segment.
         """
         _ensure_is_type(segment, Segment, 'segment')
-        _ensure_is_type(includes, Feature, 'includes')
+        _ensure_is_type(includes, HigherOrderFunction, 'includes')
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
         return self._includes(includes, flattenedSegments[index:])
 
-    def includes_after(self, segment: Segment, includes: Feature) -> bool:
+    def includes_after(self, segment: Segment, includes: HigherOrderFunction) -> bool:
         """
         Find if a segment with the features given exists within a word, after another segment.
         """
         _ensure_is_type(segment, Segment, 'segment')
-        _ensure_is_type(includes, Feature, 'includes')
+        _ensure_is_type(includes, HigherOrderFunction, 'includes')
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
         return self._includes(includes, flattenedSegments[:index])
@@ -756,7 +756,8 @@ class Word:
         )
 
 
-def merge(features: list[Feature]) -> Feature:
+def merge(features: list[HigherOrderFunction]) -> Feature:
+    _ensure_list_is_type(features, HigherOrderFunction, 'features')
     output = features[0]
     for i in range(0, len(features) - 1):
         next_feature = features[i + 1]
@@ -765,6 +766,7 @@ def merge(features: list[Feature]) -> Feature:
 
 
 def select(symbol: str) -> Feature:
+    _ensure_is_type(symbol, str, "symbol")
     features = ipa(symbol)[0].features
     full_features = list(itertools.chain.from_iterable([s.features for s in SEGMENTS]))
     all_features: list[Feature] = []
@@ -782,9 +784,12 @@ def select(symbol: str) -> Feature:
 
 
 def find(symbol: str) -> Segment:
+    _ensure_is_type(symbol, str, "symbol")
     return next(filter(lambda x: x.ipa_symbol == symbol, SEGMENTS))
 
 
 def probability(feature: Feature, chance: float):
+    _ensure_is_type(feature, Feature, "feature")
+    _ensure_is_type(chance, float, "chance")
     if chance > random.random():
         return feature
