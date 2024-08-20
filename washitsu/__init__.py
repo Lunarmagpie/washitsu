@@ -733,6 +733,22 @@ class Word:
         index = flattenedSegments.index(segment)
         return self._includes(includes, flattenedSegments[:index])
 
+    def first(self, segment: Segment) -> bool:
+        """
+        Find if a segment is the first segment in a word.
+        """
+        flattenedSegments = self.flatten()
+        return self._includes(flattenedSegments.index(segment) == 0)
+
+    def last(self, segment: Segment) -> bool:
+        """
+        Find if a segment is the last segment in a word.
+        """
+        flattenedSegments = self.flatten()
+        return self._includes(
+            flattenedSegments.index(segment) == len(flattenedSegments) - 1
+        )
+
 
 def merge(features: list[Feature]) -> Feature:
     output = features[0]
