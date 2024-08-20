@@ -654,19 +654,19 @@ class Word:
 
     def matches(self, *args):
         if len(args) == 3:
-            _ensure_is_type(args[1], Segment, 'segment')
+            _ensure_is_type(args[1], Segment, "segment")
             return self._matches(args[0], args[1], args[2])
 
         if len(args) == 2 and isinstance(args[0], Segment):
-            _ensure_is_type(args[0], Segment, 'segment')
+            _ensure_is_type(args[0], Segment, "segment")
             return self._matches([], args[0], args[1])
 
         if len(args) == 2 and isinstance(args[1], Segment):
-            _ensure_is_type(args[1], Segment, 'segment')
+            _ensure_is_type(args[1], Segment, "segment")
             return self._matches(args[0], args[1], [])
 
         if len(args) == 1:
-            _ensure_is_type(args[0], Segment, 'segment')
+            _ensure_is_type(args[0], Segment, "segment")
             return self._matches([], args[0], [])
 
         raise Exception("Unknown overload")
@@ -721,6 +721,8 @@ class Word:
         """
         Find if a segment with the features given exists within a word, before another segment.
         """
+        _ensure_is_type(segment, Segment, 'segment')
+        _ensure_is_type(includes, Feature, 'includes')
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
         return self._includes(includes, flattenedSegments[index:])
@@ -729,6 +731,8 @@ class Word:
         """
         Find if a segment with the features given exists within a word, after another segment.
         """
+        _ensure_is_type(segment, Segment, 'segment')
+        _ensure_is_type(includes, Feature, 'includes')
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
         return self._includes(includes, flattenedSegments[:index])
@@ -737,6 +741,7 @@ class Word:
         """
         Find if a segment is the first segment in a word.
         """
+        _ensure_is_type(segment, Segment, "segment")
         flattenedSegments = self.flatten()
         return self._includes(flattenedSegments.index(segment) == 0)
 
@@ -744,6 +749,7 @@ class Word:
         """
         Find if a segment is the last segment in a word.
         """
+        _ensure_is_type(segment, Segment, "segment")
         flattenedSegments = self.flatten()
         return self._includes(
             flattenedSegments.index(segment) == len(flattenedSegments) - 1
