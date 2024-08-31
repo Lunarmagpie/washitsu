@@ -62,3 +62,8 @@ def great_vowel_shift(word: Word, segment: Segment) -> Segment:
     if segment.has(close_mid):
         return segment - close_mid + close
     return segment
+
+
+@resyllabify([-syllabic & optional], [syllabic | repeat], [])
+def syllabification_test(word: Word) -> Segment:
+    return word

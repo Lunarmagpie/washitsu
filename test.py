@@ -34,15 +34,4 @@ segments = ipa(
     "ə",
 )
 
-(
-    Word(
-        [
-            syllable(segments, [select("m")], [select("u")], [select("s")]),
-        ]
-    )
-    .show()
-    .then(umlaut)
-    .show()
-    .then(great_vowel_shift)
-    .show()
-)
+syllabify_string("kakui", [-syllabic & optional], [syllabic & repeat], []).show()

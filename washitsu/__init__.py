@@ -1,10 +1,9 @@
 from __future__ import annotations
+import itertools
 import copy
 from dataclasses import dataclass
 import random
 import typing as t
-import inspect
-import itertools
 from pprint import pprint
 
 __all__ = [
@@ -17,6 +16,8 @@ __all__ = [
     "select",
     "find",
     "probability",
+    "resyllabify",
+    "syllabify_string",
     "_",
     "bilabial",
     "labiodental",
@@ -57,31 +58,13 @@ __all__ = [
     "velarized",
     "pharyngealized",
     "long",
+    "optional",
+    "repeat",
 ]
-
-
-class WaishitsuError(Exception):
-    pass
 
 
 def lists_are_equal(a, b):
     return all(x in b for x in a) and all(x in a for x in b)
-
-
-def _ensure_is_type(a, type, arg_name: str):
-    if isinstance(a, type):
-        return
-    raise WaishitsuError(f"Expected `{arg_name}` to be {type.__name__}, found `{a}`.")
-
-
-def _ensure_list_is_type(a, type, arg_name: str):
-    if isinstance(a, list):
-        return
-    for x in a:
-        if not isinstance(a, type):
-            raise WaishitsuError(
-                f"Expected `{arg_name}` to be list[{type.__name__}], found `{a}`."
-            )
 
 
 def subset_amount(a, b):
@@ -96,7 +79,7 @@ def subset_amount(a, b):
 
 
 class HigherOrderFunction:
-    def __init__(self, callable: t.Any):
+    def __init__(self, callable: t.Any) -> None:
         self.callable = callable
         self.name = callable.__name__
 
@@ -198,8 +181,52 @@ labialized = Feature("Labialized")
 palatalized = Feature("Palatalized")
 velarized = Feature("Velarized")
 pharyngealized = Feature("Pharyngealized")
-long = Feature("long")
+long = Feature("Long")
+# Special feature for syllabification
+optional = Feature("Optional")
+repeat = Feature("Repeat")
 
+all_features = [
+        bilabial,
+    labiodental,
+    alveolar,
+    postalveolar,
+    retroflex,
+    palatal,
+    velar,
+    uvular,
+    pharyngeal,
+    glottal,
+    consonantal,
+    stop,
+    trill,
+    tap,
+    strident,
+    sibilant,
+    lateral,
+    voiced,
+    aspirated,
+    sonorant,
+    continuant,
+    nasal,
+    delayed_release,
+    syllabic,
+    front,
+    central,
+    back,
+    close,
+    near_close,
+    close_mid,
+    mid,
+    open_mid,
+    near_open,
+    open,
+    labialized,
+    palatalized,
+    velarized,
+    pharyngealized,
+    long,
+]
 
 @dataclass
 class Segment:
@@ -494,6 +521,8 @@ DIACRITICS = [
     Segment("ʰ", [aspirated]),
     Segment("̃", [nasal]),
     Segment("ː", [long]),
+    Segment("R", [repeat]),
+    Segment("O", [optional]),
 ]
 
 
@@ -517,8 +546,6 @@ def syllable(
     nucleus: list[t.Callable[[list[Feature]], bool] | None],
     coda: list[t.Callable[[list[Feature]], bool] | None],
 ):
-    _ensure_list_is_type(segments, Segment, "segments")
-
     output = []
 
     for segment in [onset, nucleus, coda]:
@@ -574,9 +601,7 @@ def _default_word_printer(segment: Segment) -> str:
                 filter(lambda x: x.features == [feature], DIACRITICS)
             ).ipa_symbol
         except:
-            raise WaishitsuError(
-                f"Failed to print word because waishitsu could not find an IPA symbol matching the feature set: {segment.features}"
-            )
+            raise Exception(f"Can not find matching segment: {segment.features}")
 
     return subset_amounts[0][0].ipa_symbol + diacritics
 
@@ -586,10 +611,6 @@ def each_segment(f: t.Callable[[Word], Segment | list[Segment]]):
         syllables = []
 
         def to_list(x):
-            if x is None:
-                raise WaishitsuError(
-                    "Expected a segment or a list of segments, found `None`"
-                )
             if isinstance(x, list):
                 return x
             else:
@@ -617,6 +638,95 @@ def each_segment(f: t.Callable[[Word], Segment | list[Segment]]):
     return out
 
 
+def syllabify(
+    segments,
+    onset: list[HigherOrderFunction],
+    nucleus: list[HigherOrderFunction],
+    coda: list[HigherOrderFunction],
+):
+    def get_syllable_section(index: int) -> str:
+        if index < len(onset):
+            return "onset"
+        if index < len(onset) + len(nucleus):
+            return "nucleus"
+        return "coda"
+
+    def push_to_last(segment: Segment, index: int, syllables: list[Syllable]):
+        section = get_syllable_section(index)
+        if section == "onset":
+            syllables[len(syllables) - 1].onset.append(segment)
+        if section == "nucleus":
+            syllables[len(syllables) - 1].nucleus.append(segment)
+        if section == "coda":
+            syllables[len(syllables) - 1].coda.append(segment)
+        return syllables
+
+    syllables = []
+
+    index = 0
+    letter_index = 0
+    structure_list = onset + nucleus + coda
+    syllables.append(Syllable([], [], []))
+
+    while letter_index < len(segments):
+        segment = segments[letter_index]
+        check = structure_list[index]
+        prev_index = (index - 1) % len(structure_list)
+        prev_check = structure_list[prev_index]
+
+        features = segment.features + [optional] + [repeat]
+
+        if check(features):
+            syllables = push_to_last(segment, index, syllables)
+            letter_index += 1
+        elif prev_check(all_features + [repeat]) & prev_check(features):
+            last_syllable = syllables[len(syllables) - 1]
+            if len(last_syllable.onset + last_syllable.nucleus + last_syllable.coda) == 0:
+                syllables.pop()
+            syllables = push_to_last(segment, prev_index, syllables)
+            letter_index += 1
+            index -= 1
+        elif check([optional]):
+            pass
+        else:
+            raise Exception(f"Invalid Syllable structure: {syllables}")
+
+        if index == len(structure_list) - 1 and letter_index < len(segments):
+            syllables.append(Syllable([], [], []))
+            index = 0
+        else:
+            index += 1
+
+    return Word(syllables)
+
+
+def syllabify_string(
+    string: str,
+    onset: list[HigherOrderFunction],
+    nucleus: list[HigherOrderFunction],
+    coda: list[HigherOrderFunction],
+):
+    out = []
+    for s in string:
+        out.append(find(s))
+    return syllabify(out, onset, nucleus, coda)
+
+
+def resyllabify(
+    onset: list[HigherOrderFunction],
+    nucleus: list[HigherOrderFunction],
+    coda: list[HigherOrderFunction],
+):
+    def wrap(f: t.Callable[[Word], any]):
+        def out(word: Word):
+            segments = word.flatten()
+            return syllabify(segments, onset, nucleus, coda)
+
+        return out
+
+    return wrap
+
+
 @dataclass
 class Word:
     syllables: list[Syllable]
@@ -624,8 +734,16 @@ class Word:
     def show(self, printer: t.Callable[[Segment], str] = _default_word_printer) -> None:
         output = []
         for syllable in self.syllables:
-            output += [*syllable.onset, *syllable.nucleus, *syllable.coda]
-        print("".join([printer(x) for x in output]))
+            output += (
+                "".join(
+                    [
+                        printer(x)
+                        for x in [*syllable.onset, *syllable.nucleus, *syllable.coda]
+                    ]
+                )
+                + "."
+            )
+        print("".join(output))
         return self
 
     def flatten(self) -> list[Segment]:
@@ -637,36 +755,28 @@ class Word:
         return segments
 
     @t.overload
-    def matches(self, before: list, segment: Segment, after: list) -> bool:
-        ...
+    def matches(self, before: list, segment: Segment, after: list) -> bool: ...
 
     @t.overload
-    def matches(self, before: list, segment: Segment) -> bool:
-        ...
+    def matches(self, before: list, segment: Segment) -> bool: ...
 
     @t.overload
-    def matches(self, segment: Segment, after: list) -> bool:
-        ...
+    def matches(self, segment: Segment, after: list) -> bool: ...
 
     @t.overload
-    def matches(self, segment: Segment) -> bool:
-        ...
+    def matches(self, segment: Segment) -> bool: ...
 
     def matches(self, *args):
         if len(args) == 3:
-            _ensure_is_type(args[1], Segment, "segment")
             return self._matches(args[0], args[1], args[2])
 
         if len(args) == 2 and isinstance(args[0], Segment):
-            _ensure_is_type(args[0], Segment, "segment")
             return self._matches([], args[0], args[1])
 
         if len(args) == 2 and isinstance(args[1], Segment):
-            _ensure_is_type(args[1], Segment, "segment")
             return self._matches(args[0], args[1], [])
 
         if len(args) == 1:
-            _ensure_is_type(args[0], Segment, "segment")
             return self._matches([], args[0], [])
 
         raise Exception("Unknown overload")
@@ -700,7 +810,7 @@ class Word:
     def then(self, sound_change: t.Callable[[Word], Word]) -> t.Self:
         return sound_change(self)
 
-    def _includes(self, search: Feature, list: list[Feature]) -> bool:
+    def _includes(self, search: HigherOrderFunction, list: list[Feature]) -> bool:
         """
         Find if a Feature exists in a list of Features.
         """
@@ -710,7 +820,7 @@ class Word:
                 return True
         return False
 
-    def includes(self, includes: Feature) -> bool:
+    def includes(self, includes: HigherOrderFunction) -> bool:
         """
         Find if a segment with the features given exists within a word.
         """
@@ -721,8 +831,6 @@ class Word:
         """
         Find if a segment with the features given exists within a word, before another segment.
         """
-        _ensure_is_type(segment, Segment, 'segment')
-        _ensure_is_type(includes, HigherOrderFunction, 'includes')
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
         return self._includes(includes, flattenedSegments[index:])
@@ -731,8 +839,6 @@ class Word:
         """
         Find if a segment with the features given exists within a word, after another segment.
         """
-        _ensure_is_type(segment, Segment, 'segment')
-        _ensure_is_type(includes, HigherOrderFunction, 'includes')
         flattenedSegments = self.flatten()
         index = flattenedSegments.index(segment)
         return self._includes(includes, flattenedSegments[:index])
@@ -741,7 +847,6 @@ class Word:
         """
         Find if a segment is the first segment in a word.
         """
-        _ensure_is_type(segment, Segment, "segment")
         flattenedSegments = self.flatten()
         return self._includes(flattenedSegments.index(segment) == 0)
 
@@ -749,15 +854,13 @@ class Word:
         """
         Find if a segment is the last segment in a word.
         """
-        _ensure_is_type(segment, Segment, "segment")
         flattenedSegments = self.flatten()
         return self._includes(
             flattenedSegments.index(segment) == len(flattenedSegments) - 1
         )
 
 
-def merge(features: list[HigherOrderFunction]) -> Feature:
-    _ensure_list_is_type(features, HigherOrderFunction, 'features')
+def merge(features: list[Feature]) -> HigherOrderFunction:
     output = features[0]
     for i in range(0, len(features) - 1):
         next_feature = features[i + 1]
@@ -766,7 +869,6 @@ def merge(features: list[HigherOrderFunction]) -> Feature:
 
 
 def select(symbol: str) -> Feature:
-    _ensure_is_type(symbol, str, "symbol")
     features = ipa(symbol)[0].features
     full_features = list(itertools.chain.from_iterable([s.features for s in SEGMENTS]))
     all_features: list[Feature] = []
@@ -784,12 +886,9 @@ def select(symbol: str) -> Feature:
 
 
 def find(symbol: str) -> Segment:
-    _ensure_is_type(symbol, str, "symbol")
     return next(filter(lambda x: x.ipa_symbol == symbol, SEGMENTS))
 
 
 def probability(feature: Feature, chance: float):
-    _ensure_is_type(feature, Feature, "feature")
-    _ensure_is_type(chance, float, "chance")
     if chance > random.random():
         return feature
